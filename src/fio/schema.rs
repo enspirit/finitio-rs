@@ -9,7 +9,7 @@ use nom::{
     IResult,
 };
 
-use crate::fio::common::Span;
+use crate::fio::{common::Span, base::RefType};
 use crate::fio::errors::ParseError;
 
 use super::{
@@ -71,6 +71,7 @@ fn test_parse_schema() {
 
       Number = .Number
       Any = .
+      Integer = Number
   ";
     assert_eq!(
         parse_schema(content),
@@ -92,7 +93,13 @@ fn test_parse_schema() {
                 TypeDef {
                     name: String::from("Any"),
                     target: Type::BaseType(BaseType::Any)
-                }
+                },
+                TypeDef {
+                    name: String::from("Integer"),
+                    target: Type::BaseType(BaseType::Ref(RefType {
+                        name: String::from("Number")
+                    }))
+                },
             ]
         })
     )
