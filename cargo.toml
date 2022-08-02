@@ -1,0 +1,14 @@
+[package]
+name = "finitio"
+version = "0.1.0"
+authors = ["Louis Lambeau <louis.lambeau@enspirit.be>"]
+description = "Finitio data language"
+keywords = ["data", "language", "validation", "adt"]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/enspirit/finitio-rust"
+readme = "README.md"
+edition = "2018"
+
+[dependencies]
+nom = "7.0"
+nom_locate = "4.0"
