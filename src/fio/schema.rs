@@ -33,18 +33,18 @@ pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
     let result = parse_schema_content(span);
     match result {
         Ok((span, parts)) if span.fragment() == &"" => {
-            let mut Imports: Vec<Import> = Vec::new();
-            let mut TypeDefs: Vec<TypeDef> = Vec::new();
+            let mut imports: Vec<Import> = Vec::new();
+            let mut type_defs: Vec<TypeDef> = Vec::new();
 
             for part in parts {
                 match part {
-                    SchemaPart::Import(part) => Imports.push(part),
-                    SchemaPart::TypeDef(part) => TypeDefs.push(part),
+                    SchemaPart::Import(part) => imports.push(part),
+                    SchemaPart::TypeDef(part) => type_defs.push(part),
                 }
             }
             Ok(Schema {
-                imports: Imports,
-                type_defs: TypeDefs
+                imports,
+                type_defs,
             })
         }
         Ok((garbage, _)) => Err(ParseError::TrailingGarbage(garbage)),
