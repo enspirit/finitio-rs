@@ -70,6 +70,7 @@ fn test_parse_schema() {
       @import finitio/data
 
       Number = .Number
+      Any = .
   ";
     assert_eq!(
         parse_schema(content),
@@ -81,12 +82,18 @@ fn test_parse_schema() {
                     column: 15
                 },
             }],
-            type_defs: vec![TypeDef {
-                name: String::from("Number"),
-                target: Type::BaseType(BaseType::Builtin(BuiltinType {
-                    name: String::from("Number")
-                }))
-            }]
+            type_defs: vec![
+                TypeDef {
+                    name: String::from("Number"),
+                    target: Type::BaseType(BaseType::Builtin(BuiltinType {
+                        name: String::from("Number")
+                    }))
+                },
+                TypeDef {
+                    name: String::from("Any"),
+                    target: Type::BaseType(BaseType::Any)
+                }
+            ]
         })
     )
 }
