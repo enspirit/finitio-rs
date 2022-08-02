@@ -1,8 +1,7 @@
 mod common;
-mod import;
-mod r#type;
 mod errors;
+mod import;
 mod schema;
+mod r#type;
 
 pub use common::Span;
-pub use r#type::{};
