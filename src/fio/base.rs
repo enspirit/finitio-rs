@@ -10,6 +10,8 @@ use nom::{
     IResult,
 };
 
+use super::common::ws;
+
 #[derive(Debug, PartialEq)]
 pub enum BaseType {
     Nil,
@@ -53,7 +55,15 @@ pub fn parse_ref(input: Span) -> IResult<Span, BaseType> {
 }
 
 pub fn parse_base_type(input: Span) -> IResult<Span, BaseType> {
-    alt((parse_nil, parse_builtin, parse_any, parse_ref))(input)
+    preceded(
+        ws,
+        alt((
+            parse_nil,
+            parse_builtin,
+            parse_any,
+            parse_ref
+        ))
+    )(input)
 }
 
 #[test]

@@ -72,6 +72,7 @@ fn test_parse_schema() {
       Number = .Number
       Any = .
       Integer = Number
+
   ";
     assert_eq!(
         parse_schema(content),
