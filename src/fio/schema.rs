@@ -6,22 +6,24 @@ use nom::{
     IResult,
 };
 
-use crate::common::FilePosition;
+use crate::{common::FilePosition, fio::{typedef::Type, base::BuiltinType}};
 use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
 
 use super::{
     common::{ws, ws1},
-    import::{parse_import, Import},
+    import::{parse_import, Import}, typedef::{parse_typedef, TypeDef},
 };
 
 #[derive(Debug, PartialEq)]
 pub struct Schema {
     pub imports: Vec<Import>,
+    pub type_defs: Vec<TypeDef>,
 }
 
 pub enum SchemaPart {
     Import(Import),
+    TypeDef(TypeDef),
 }
 
 pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
@@ -30,13 +32,18 @@ pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
     match result {
         Ok((span, parts)) if span.fragment() == &"" => {
             let mut Imports: Vec<Import> = Vec::new();
+            let mut TypeDefs: Vec<TypeDef> = Vec::new();
 
             for part in parts {
                 match part {
                     SchemaPart::Import(part) => Imports.push(part),
+                    SchemaPart::TypeDef(part) => TypeDefs.push(part),
                 }
             }
-            Ok(Schema { imports: Imports })
+            Ok(Schema {
+                imports: Imports,
+                type_defs: TypeDefs
+            })
         }
         Ok((garbage, _)) => Err(ParseError::TrailingGarbage(garbage)),
         Err(error) => Err(ParseError::Nom(error)),
@@ -44,7 +51,10 @@ pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
 }
 
 fn parse_schema_part(input: Span) -> IResult<Span, SchemaPart> {
-    alt((map(parse_import, SchemaPart::Import),))(input)
+    alt((
+        map(parse_import, SchemaPart::Import),
+        map(parse_typedef, SchemaPart::TypeDef),
+    ))(input)
 }
 
 pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
@@ -53,9 +63,11 @@ pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
 
 #[test]
 fn test_parse_schema() {
-    use crate::fio::r#type::{RefType, Type};
+    use crate::fio::base::{RefType, BaseType};
     let content = "
       @import finitio/data
+
+      Number = .Number
   ";
     assert_eq!(
         parse_schema(content),
@@ -67,6 +79,12 @@ fn test_parse_schema() {
                     column: 15
                 },
             }],
+            type_defs: vec![TypeDef {
+                name: String::from("Number"),
+                target: Type::BaseType(BaseType::Builtin(BuiltinType {
+                    name: String::from("Number")
+                }))
+            }]
         })
     )
 }
