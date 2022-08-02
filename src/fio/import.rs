@@ -1,6 +1,5 @@
 use nom::{
-    bytes::complete::{is_not, tag, take_until1, take_while1},
-    character::complete::{char, newline},
+    bytes::complete::{tag, take_while1},
     combinator::map,
     sequence::{preceded, terminated},
     IResult,

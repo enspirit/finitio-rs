@@ -1,3 +1,6 @@
+#[cfg(test)]
+use crate::{common::FilePosition, fio::{typedef::Type, base::BuiltinType}};
+
 use nom::{
     branch::alt,
     combinator::map,
@@ -6,7 +9,6 @@ use nom::{
     IResult,
 };
 
-use crate::{common::FilePosition, fio::{typedef::Type, base::BuiltinType}};
 use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
 
@@ -63,7 +65,7 @@ pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
 
 #[test]
 fn test_parse_schema() {
-    use crate::fio::base::{RefType, BaseType};
+    use crate::fio::base::{BaseType};
     let content = "
       @import finitio/data
 

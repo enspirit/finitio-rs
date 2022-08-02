@@ -1,21 +1,18 @@
 #[cfg(test)]
 use crate::fio::common::assert_parse;
+#[cfg(test)]
+use crate::fio::base::{RefType, BuiltinType};
 
 use crate::fio::common::{parse_identifier, Span};
-use crate::fio::base::{parse_base_type, BaseType, RefType};
+use crate::fio::base::{parse_base_type, BaseType};
 
 use nom::{
-    branch::alt,
     bytes::complete::tag,
-    character::complete::char,
-    combinator::{cut, map, opt},
-    error::context,
-    multi::{many0, separated_list0},
-    sequence::{preceded, separated_pair, terminated, tuple},
+    combinator::{map},
+    sequence::{preceded, separated_pair},
     IResult,
 };
 
-use super::base::BuiltinType;
 use super::common::ws;
 
 #[derive(Debug, PartialEq)]

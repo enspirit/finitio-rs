@@ -5,10 +5,7 @@ use crate::fio::common::{parse_identifier, Span};
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::complete::char,
-    combinator::{cut, map, opt},
-    error::context,
-    multi::{many0, separated_list0},
+    combinator::{map},
     sequence::{preceded, separated_pair, terminated, tuple},
     IResult,
 };
