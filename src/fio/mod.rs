@@ -4,6 +4,7 @@ mod import;
 mod schema;
 mod base;
 mod seq;
+mod set;
 mod typedef;
 
 pub use common::Span;

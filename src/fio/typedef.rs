@@ -7,6 +7,7 @@ use crate::fio::{
 use crate::fio::common::{parse_identifier, Span};
 use crate::fio::base::{parse_base_type, BaseType};
 use crate::fio::seq::{parse_seq, SeqType};
+use crate::fio::set::{parse_set, SetType};
 
 use nom::{
     bytes::complete::tag,
@@ -21,6 +22,7 @@ use super::{common::ws};
 pub enum Type {
     BaseType(BaseType),
     SeqType(SeqType),
+    SetType(SetType),
 }
 
 #[derive(Debug, PartialEq)]
@@ -33,6 +35,7 @@ pub fn parse_right(input: Span) -> IResult<Span, Type> {
     alt((
         map(parse_base_type, Type::BaseType),
         map(parse_seq, Type::SeqType),
+        map(parse_set, Type::SetType),
     ))
     (input)
 }
@@ -116,6 +119,19 @@ fn test_parse_typedef() {
         TypeDef {
             name: String::from("Integer"),
             target: Type::SeqType(SeqType {
+                elm_type: BaseType::Ref(RefType {
+                    name: String::from("Number")
+                })
+            })
+        }
+    );
+
+    // A set type
+    assert_parse(
+        parse_typedef(Span::new("Integer = {Number}")),
+        TypeDef {
+            name: String::from("Integer"),
+            target: Type::SetType(SetType {
                 elm_type: BaseType::Ref(RefType {
                     name: String::from("Number")
                 })
