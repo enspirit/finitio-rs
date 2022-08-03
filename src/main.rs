@@ -1,5 +1,5 @@
 use finitio::fio;
-use std::path::{Path, PathBuf};
+use finitio::schema;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     cmd_parse()
@@ -8,20 +8,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 const TEST_SCHEMA: &str = r#"
 @import finitio/data
 
+Null = Nil
+Any = .
 Number = .Number
 Integer = Number
 
 NumberSeq = [Number]
 NumberSet = {Number}
+
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
     // Parse FIO file
     let mut fios: Vec<fio::Schema> = Vec::new();
     let fio = fio::parse_schema(TEST_SCHEMA).map_err(|e| format!("{}", e))?;
-    fios.push(fio);
+    // fios.push(fio);
 
-    println!("{:?}", fios);
+    let res = schema::Schema::from_fio(fio)?;
+    println!("{:?}", res);
 
     Ok(())
 }

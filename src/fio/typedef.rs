@@ -75,6 +75,7 @@ fn test_parse_right() {
     assert_parse(
         parse_right(Span::new("[ Number ]")),
         Type::SeqType(SeqType {
+            position: FilePosition { line: 1, column: 1 },
             elm_type: BaseType::Ref(RefType {
                 name: String::from("Number"),
                 position: FilePosition { line: 1, column: 3 }
@@ -129,6 +130,7 @@ fn test_parse_typedef() {
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::SeqType(SeqType {
+                position: FilePosition { line: 1, column: 11 },
                 elm_type: BaseType::Ref(RefType {
                     name: String::from("Number"),
                     position: FilePosition { line: 1, column: 12 }
@@ -144,6 +146,7 @@ fn test_parse_typedef() {
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::SetType(SetType {
+                position: FilePosition { line: 1, column: 11 },
                 elm_type: BaseType::Ref(RefType {
                     name: String::from("Number"),
                     position: FilePosition { line: 1, column: 12 }

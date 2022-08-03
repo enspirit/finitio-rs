@@ -17,6 +17,7 @@ use super::common::ws;
 #[derive(Debug, PartialEq)]
 pub struct SetType {
     pub elm_type: BaseType,
+    pub position: FilePosition,
 }
 
 pub fn parse_set(input: Span) -> IResult<Span, SetType> {
@@ -28,6 +29,7 @@ pub fn parse_set(input: Span) -> IResult<Span, SetType> {
         ), |elm_type| {
             SetType {
                 elm_type,
+                position: input.into(),
             }
         }
     )(input)
@@ -38,18 +40,21 @@ fn test_parse_set() {
     assert_parse(
         parse_set(Span::new("{Nil}")),
         SetType {
-            elm_type: BaseType::Nil
+            elm_type: BaseType::Nil,
+            position: FilePosition { line: 1, column: 1 }
         }
     );
     assert_parse(
         parse_set(Span::new("{.}")),
         SetType {
-            elm_type: BaseType::Any
+            elm_type: BaseType::Any,
+            position: FilePosition { line: 1, column: 1 }
         }
     );
     assert_parse(
         parse_set(Span::new("{.Number}")),
         SetType {
+            position: FilePosition { line: 1, column: 1 },
             elm_type: BaseType::Builtin(BuiltinType{
                 name: "Number".to_string(),
                 position: FilePosition { line: 1, column: 2 }
@@ -59,6 +64,7 @@ fn test_parse_set() {
     assert_parse(
         parse_set(Span::new("{Number}")),
         SetType {
+            position: FilePosition { line: 1, column: 1 },
             elm_type: BaseType::Ref(RefType{
                 name: "Number".to_string(),
                 position: FilePosition { line: 1, column: 2 }
@@ -70,6 +76,7 @@ fn test_parse_set() {
     assert_parse(
         parse_set(Span::new("{   Number \n \t }")),
         SetType {
+            position: FilePosition { line: 1, column: 1 },
             elm_type: BaseType::Ref(RefType{
                 name: "Number".to_string(),
                 position: FilePosition { line: 1, column: 5 }
