@@ -1,7 +1,6 @@
 #[cfg(test)]
 use crate::{
     common::FilePosition,
-    fio::{base::BuiltinType},
 };
 
 use nom::{
@@ -12,7 +11,7 @@ use nom::{
     IResult,
 };
 
-use crate::fio::{common::Span, base::RefType, Type};
+use crate::fio::{common::Span, Type, builtin, any, r#ref};
 use crate::fio::errors::ParseError;
 
 use super::{
@@ -68,7 +67,6 @@ pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
 
 #[test]
 fn test_parse_schema() {
-    use crate::fio::base::{BaseType};
     let content = "
 @import finitio/data
 
@@ -90,23 +88,25 @@ Integer = Number
                 TypeDef {
                     name: String::from("Number"),
                     position: FilePosition { line: 4, column: 1 },
-                    target: Type::BaseType(BaseType::Builtin(BuiltinType {
+                    target: Type::BuiltinType(builtin::BuiltinType {
                         name: String::from("Number"),
                         position: FilePosition { line: 4, column: 10 }
-                    }))
+                    })
                 },
                 TypeDef {
                     name: String::from("Any"),
-                    target: Type::BaseType(BaseType::Any),
+                    target: Type::AnyType(any::AnyType {
+                        position: FilePosition { line: 5, column: 7 }
+                    }),
                     position: FilePosition { line: 5, column: 1 }
                 },
                 TypeDef {
                     name: String::from("Integer"),
                     position: FilePosition { line: 6, column: 1 },
-                    target: Type::BaseType(BaseType::Ref(RefType {
+                    target: Type::RefType(r#ref::RefType {
                         name: String::from("Number"),
                         position: FilePosition { line: 6, column: 11 }
-                    }))
+                    })
                 },
             ]
         })

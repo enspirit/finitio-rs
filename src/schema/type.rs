@@ -4,7 +4,6 @@ use std::{rc::Weak, cell::RefCell};
 use crate::common::FilePosition;
 use crate::fio;
 
-use super::base::Base;
 use super::seq::Seq;
 use super::set::Set;
 use super::typedef::TypeDef;
@@ -20,15 +19,9 @@ pub enum Type {
 
 #[derive(Clone,Debug)]
 pub enum TypeRef {
-  Base(BaseRef),
   Seq(SeqRef),
   Set(SetRef),
   Unresolved { name: String, position: FilePosition },
-}
-
-#[derive(Clone,Debug)]
-pub struct BaseRef {
-  pub base_: Weak<RefCell<Base>>
 }
 
 #[derive(Clone,Debug)]
@@ -45,7 +38,6 @@ impl TypeRef {
   pub fn name(&self) -> String {
     match self {
       Self::Unresolved { name, position } => name.clone(),
-      Self::Base(base) => base.base_.upgrade().unwrap().borrow().name.clone(),
       Self::Seq(seq) => seq.seq_.upgrade().unwrap().borrow().name.clone(),
       Self::Set(set) => set.set_.upgrade().unwrap().borrow().name.clone(),
     }
@@ -53,7 +45,6 @@ impl TypeRef {
   pub fn position(&self) -> FilePosition {
     match self {
       Self::Unresolved { name, position } => position.clone(),
-      Self::Base(base) => base.base_.upgrade().unwrap().borrow().position.clone(),
       Self::Seq(seq) => seq.seq_.upgrade().unwrap().borrow().position.clone(),
       Self::Set(set) => set.set_.upgrade().unwrap().borrow().position.clone(),
     }
@@ -64,9 +55,6 @@ impl TypeRef {
       *self = match ftype {
         Some(udtype) => {
           match udtype {
-            TypeDef::Base(base_) => TypeRef::Base(BaseRef {
-              base_: Rc::downgrade(&base_)
-            }),
             TypeDef::Seq(seq_) => TypeRef::Seq(SeqRef {
               seq_: Rc::downgrade(&seq_)
             }),
@@ -89,13 +77,19 @@ impl TypeRef {
 
 impl Type {
   pub fn from_fio(
-    ftype: &fio::BaseType
+    ftype: &fio::Type
   ) -> Self {
     match ftype {
-        fio::BaseType::Nil => Self::Nil,
-        fio::BaseType::Any => Self::Any,
-        fio::BaseType::Builtin(n) => Self::Builtin(n.name.clone()),
-        fio::BaseType::Ref(n) => Self::Ref(TypeRef::Unresolved { name: n.name.clone(), position: n.position.clone() }),
+        fio::Type::AnyType(_) => todo!(),
+        fio::Type::NilType(_) => todo!(),
+        fio::Type::BuiltinType(_) => todo!(),
+        fio::Type::RefType(_) => todo!(),
+        fio::Type::SeqType(_) => todo!(),
+        fio::Type::SetType(_) => todo!(),
+        // fio::BaseType::Nil => Self::Nil,
+        // fio::BaseType::Any => Self::Any,
+        // fio::BaseType::Builtin(n) => Self::Builtin(n.name.clone()),
+        // fio::BaseType::Ref(n) => Self::Ref(TypeRef::Unresolved { name: n.name.clone(), position: n.position.clone() }),
     }
   }
 

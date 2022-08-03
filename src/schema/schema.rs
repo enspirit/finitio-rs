@@ -1,5 +1,5 @@
 use crate::{fio, common::FilePosition};
-use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, base::Base};
+use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type};
 use std::{collections::{btree_map::Entry as BTreeMapEntry, BTreeMap}, rc::Rc, cell::RefCell};
 use super::seq::Seq;
 use super::set::Set;
@@ -33,33 +33,30 @@ impl Schema {
       //
 
       match &typedef.target {
-        fio::Type::BaseType(t) => {
-          ns.add_type(
-            TypeDef::Base(Rc::new(RefCell::new(Base::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
-            &mut type_map
-          )
-        },
-        fio::Type::SeqType(t) => {
-          ns.add_type(
-            TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
-            &mut type_map
-          )
-        },
-        fio::Type::SetType(t) => {
-          ns.add_type(
-            TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
-            &mut type_map
-          )
-        },
+        fio::Type::AnyType(_) => todo!(),
+        fio::Type::NilType(_) => todo!(),
+        fio::Type::BuiltinType(_) => todo!(),
+        fio::Type::RefType(_) => todo!(),
+        fio::Type::SeqType(_) => todo!(),
+        fio::Type::SetType(_) => todo!(),
+        // fio::Type::SeqType(t) => {
+        //   ns.add_type(
+        //     TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
+        //       typedef.name.clone(),
+        //       t
+        //     )))),
+        //     &mut type_map
+        //   )
+        // },
+        // fio::Type::SetType(t) => {
+        //   ns.add_type(
+        //     TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
+        //       typedef.name.clone(),
+        //       t
+        //     )))),
+        //     &mut type_map
+        //   )
+        // },
       }
     }
     ns.resolve(&type_map)?;

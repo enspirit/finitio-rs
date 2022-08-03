@@ -1,11 +1,11 @@
+use std::fs::File;
+
 #[cfg(test)]
 use crate::fio::{
     common::assert_parse,
-    base::{RefType, BuiltinType},
 };
 
 use crate::{fio::common::{parse_identifier, Span}, common::FilePosition};
-use crate::fio::base::{parse_base_type, BaseType};
 use crate::fio::seq::{parse_seq, SeqType};
 use crate::fio::set::{parse_set, SetType};
 
@@ -16,20 +16,32 @@ use nom::{
     IResult, branch::alt,
 };
 
-use super::{common::ws};
+use super::{
+    common::ws,
+    nil::{parse_nil, NilType},
+    any::{parse_any, AnyType},
+    builtin::parse_builtin, builtin::BuiltinType,
+    r#ref::{parse_ref, RefType},
+};
 
 #[derive(Debug, PartialEq)]
 pub enum Type {
-    BaseType(BaseType),
+    AnyType(AnyType),
+    NilType(NilType),
+    BuiltinType(BuiltinType),
+    RefType(RefType),
     SeqType(SeqType),
     SetType(SetType),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
     alt((
-        map(parse_base_type, Type::BaseType),
-        map(parse_seq, Type::SeqType),
-        map(parse_set, Type::SetType),
+        map(preceded(ws, parse_builtin), Type::BuiltinType),
+        map(preceded(ws, parse_any), Type::AnyType),
+        map(preceded(ws, parse_nil), Type::NilType),
+        map(preceded(ws, parse_ref), Type::RefType),
+        map(preceded(ws, parse_seq), Type::SeqType),
+        map(preceded(ws, parse_set), Type::SetType),
     ))
     (input)
 }
@@ -39,27 +51,29 @@ fn test_parse_type() {
     // Nil (with spaces)
     assert_parse(
         parse_type(Span::new(" Nil")),
-        Type::BaseType(BaseType::Nil)
+        Type::NilType(NilType{
+            position: FilePosition { line: 1, column: 2 }
+        })
     );
 
-    // Ref (with spaces)
+    // // Ref (with spaces)
     assert_parse(
         parse_type(Span::new(" Number")),
-        Type::BaseType(BaseType::Ref(RefType {
+        Type::RefType(RefType {
             name: String::from("Number"),
             position: FilePosition { line: 1, column: 2 }
-        }))
+        })
     );
 
-    // Seq (with spaces)
+    // // Seq (with spaces)
     assert_parse(
-        parse_type(Span::new("[ Number ]")),
+        parse_type(Span::new(" [ Number ]")),
         Type::SeqType(SeqType {
-            position: FilePosition { line: 1, column: 1 },
-            elm_type: BaseType::Ref(RefType {
+            position: FilePosition { line: 1, column: 2 },
+            elm_type: Box::new(Type::RefType(RefType {
                 name: String::from("Number"),
-                position: FilePosition { line: 1, column: 3 }
-            })
+                position: FilePosition { line: 1, column: 4 }
+            }))
         })
     );
 }

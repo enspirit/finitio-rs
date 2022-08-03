@@ -1,9 +1,13 @@
 #[cfg(test)]
 use crate::fio::{
     common::assert_parse,
-    base::{RefType, BuiltinType, BaseType},
     seq::SeqType,
-    set::SetType
+    set::SetType,
+    r#ref::RefType,
+    nil,
+    builtin,
+    r#ref,
+    any
 };
 
 use crate::{fio::common::{parse_identifier, Span}, common::FilePosition};
@@ -13,7 +17,7 @@ use nom::{
     bytes::complete::tag,
     combinator::{map},
     sequence::{preceded, separated_pair},
-    IResult, branch::alt,
+    IResult,
 };
 
 use super::{common::ws};
@@ -45,7 +49,21 @@ fn test_parse_typedef() {
         parse_typedef(Span::new("Null = Nil")),
         TypeDef {
             name: String::from("Null"),
-            target: Type::BaseType(BaseType::Nil),
+            target: Type::NilType(nil::NilType {
+                position: FilePosition{ line: 1, column: 8 }
+            }),
+            position: FilePosition { line: 1, column: 1 }
+        }
+    );
+
+    // Aliasing any
+    assert_parse(
+        parse_typedef(Span::new("Any = .")),
+        TypeDef {
+            name: String::from("Any"),
+            target: Type::AnyType(any::AnyType {
+                position: FilePosition{ line: 1, column: 7 }
+            }),
             position: FilePosition { line: 1, column: 1 }
         }
     );
@@ -56,27 +74,27 @@ fn test_parse_typedef() {
         TypeDef {
             name: String::from("Number"),
             position: FilePosition { line: 1, column: 1 },
-            target: Type::BaseType(BaseType::Builtin(BuiltinType {
+            target: Type::BuiltinType(builtin::BuiltinType {
                 name: String::from("Number"),
                 position: FilePosition { line: 1, column: 10 }
-            }))
+            })
         }
     );
 
-    // Aliasing ref type
+    // // Aliasing ref type
     assert_parse(
         parse_typedef(Span::new("Integer = Number")),
         TypeDef {
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
-            target: Type::BaseType(BaseType::Ref(RefType {
+            target: Type::RefType(r#ref::RefType {
                 name: String::from("Number"),
                 position: FilePosition { line: 1, column: 11 }
-            }))
+            })
         }
     );
 
-    // A seq type
+    // // A seq type
     assert_parse(
         parse_typedef(Span::new("Integer = [Number]")),
         TypeDef {
@@ -84,15 +102,15 @@ fn test_parse_typedef() {
             position: FilePosition { line: 1, column: 1 },
             target: Type::SeqType(SeqType {
                 position: FilePosition { line: 1, column: 11 },
-                elm_type: BaseType::Ref(RefType {
+                elm_type: Box::new(Type::RefType(RefType {
                     name: String::from("Number"),
                     position: FilePosition { line: 1, column: 12 }
-                })
+                }))
             })
         }
     );
 
-    // A set type
+    // // A set type
     assert_parse(
         parse_typedef(Span::new("Integer = {Number}")),
         TypeDef {
@@ -100,25 +118,25 @@ fn test_parse_typedef() {
             position: FilePosition { line: 1, column: 1 },
             target: Type::SetType(SetType {
                 position: FilePosition { line: 1, column: 11 },
-                elm_type: BaseType::Ref(RefType {
+                elm_type: Box::new(Type::RefType(RefType {
                     name: String::from("Number"),
                     position: FilePosition { line: 1, column: 12 }
-                })
+                }))
             })
         }
     );
 
-    ////// Spacing tests
+    // ////// Spacing tests
 
     assert_parse(
         parse_typedef(Span::new("Integer=Number")),
         TypeDef {
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
-            target: Type::BaseType(BaseType::Ref(RefType {
+            target: Type::RefType(r#ref::RefType {
                 name: String::from("Number"),
                 position: FilePosition { line: 1, column: 9 }
-            }))
+            })
         }
     );
     assert_parse(
@@ -126,10 +144,10 @@ fn test_parse_typedef() {
         TypeDef {
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
-            target: Type::BaseType(BaseType::Ref(RefType {
+            target: Type::RefType(r#ref::RefType {
                 name: String::from("Number"),
                 position: FilePosition { line: 2, column: 1 }
-            }))
+            })
         }
     );
 }

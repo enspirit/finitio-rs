@@ -2,7 +2,6 @@
 mod errors;
 mod r#type;
 mod typemap;
-mod base;
 mod seq;
 mod set;
 mod schema;
