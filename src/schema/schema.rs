@@ -1,12 +1,12 @@
 use crate::{fio, common::FilePosition};
-use super::{errors::ValidationError, UserDefinedType, typemap::TypeMap, Type, base::Base};
+use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, base::Base};
 use std::{collections::{btree_map::Entry as BTreeMapEntry, BTreeMap}, rc::Rc, cell::RefCell};
 use super::seq::Seq;
 use super::set::Set;
 
 #[derive(Default, Debug)]
 pub struct Schema {
-  pub types: BTreeMap<String, UserDefinedType>
+  pub types: BTreeMap<String, TypeDef>
 }
 
 impl Schema {
@@ -35,7 +35,7 @@ impl Schema {
       match &typedef.target {
         fio::Type::BaseType(t) => {
           ns.add_type(
-            UserDefinedType::Base(Rc::new(RefCell::new(Base::from_fio(
+            TypeDef::Base(Rc::new(RefCell::new(Base::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -44,7 +44,7 @@ impl Schema {
         },
         fio::Type::SeqType(t) => {
           ns.add_type(
-            UserDefinedType::Seq(Rc::new(RefCell::new(Seq::from_fio(
+            TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -53,7 +53,7 @@ impl Schema {
         },
         fio::Type::SetType(t) => {
           ns.add_type(
-            UserDefinedType::Set(Rc::new(RefCell::new(Set::from_fio(
+            TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -73,7 +73,7 @@ impl Schema {
     Ok(())
   }
 
-  fn add_type(&mut self, type_: UserDefinedType, type_map: &mut TypeMap) {
+  fn add_type(&mut self, type_: TypeDef, type_map: &mut TypeMap) {
     type_map.insert(&type_);
     self.types.insert(type_.name().to_owned(), type_);
 }

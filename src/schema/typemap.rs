@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use super::r#type::UserDefinedType;
+use super::typedef::TypeDef;
 
 pub struct TypeMap {
-    map: HashMap<String, UserDefinedType>,
+    map: HashMap<String, TypeDef>,
 }
 
 impl TypeMap {
@@ -12,11 +12,11 @@ impl TypeMap {
             map: HashMap::new(),
         }
     }
-    pub fn insert(&mut self, ftype: &UserDefinedType) {
+    pub fn insert(&mut self, ftype: &TypeDef) {
         self.map.insert(ftype.name().clone(), ftype.clone());
     }
 
-    pub fn get(&self, name: &String) -> Option<&UserDefinedType> {
+    pub fn get(&self, name: &String) -> Option<&TypeDef> {
         self.map.get(name)
     }
 }

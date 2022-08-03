@@ -6,6 +6,8 @@ mod base;
 mod seq;
 mod set;
 mod schema;
+mod typedef;
 
-pub use r#type::{Type, TypeRef, UserDefinedType};
+pub use r#type::{Type, TypeRef};
+pub use typedef::{TypeDef};
 pub use schema::Schema;

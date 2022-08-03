@@ -7,6 +7,7 @@ use crate::fio;
 use super::base::Base;
 use super::seq::Seq;
 use super::set::Set;
+use super::typedef::TypeDef;
 use super::{errors::ValidationError, typemap::TypeMap};
 
 #[derive(Clone, Debug)]
@@ -15,13 +16,6 @@ pub enum Type {
   Any,
   Builtin(String),
   Ref(TypeRef)
-}
-
-#[derive(Clone, Debug)]
-pub enum UserDefinedType {
-  Base(Rc<RefCell<Base>>),
-  Seq(Rc<RefCell<Seq>>),
-  Set(Rc<RefCell<Set>>),
 }
 
 #[derive(Clone,Debug)]
@@ -70,13 +64,13 @@ impl TypeRef {
       *self = match ftype {
         Some(udtype) => {
           match udtype {
-            UserDefinedType::Base(base_) => TypeRef::Base(BaseRef {
+            TypeDef::Base(base_) => TypeRef::Base(BaseRef {
               base_: Rc::downgrade(&base_)
             }),
-            UserDefinedType::Seq(seq_) => TypeRef::Seq(SeqRef {
+            TypeDef::Seq(seq_) => TypeRef::Seq(SeqRef {
               seq_: Rc::downgrade(&seq_)
             }),
-            UserDefinedType::Set(set_) => TypeRef::Set(SetRef {
+            TypeDef::Set(set_) => TypeRef::Set(SetRef {
               set_: Rc::downgrade(&set_)
             }),
           }
@@ -115,23 +109,3 @@ impl Type {
     }
   }
 }
-
-impl UserDefinedType {
-  pub fn name(&self) -> String {
-    match self {
-        UserDefinedType::Base(t) => t.borrow().name.clone(),
-        UserDefinedType::Seq(t) => t.borrow().name.clone(),
-        UserDefinedType::Set(t) => t.borrow().name.clone(),
-    }
-  }
-
-  pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-    match self {
-        UserDefinedType::Base(t) => t.borrow_mut().resolve(type_map),
-        UserDefinedType::Seq(t) => t.borrow_mut().resolve(type_map),
-        UserDefinedType::Set(t) => t.borrow_mut().resolve(type_map),
-    }
-  }
-
-}
-

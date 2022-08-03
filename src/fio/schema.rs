@@ -1,5 +1,8 @@
 #[cfg(test)]
-use crate::{common::FilePosition, fio::{typedef::Type, base::BuiltinType}};
+use crate::{
+    common::FilePosition,
+    fio::{base::BuiltinType},
+};
 
 use nom::{
     branch::alt,
@@ -9,7 +12,7 @@ use nom::{
     IResult,
 };
 
-use crate::fio::{common::Span, base::RefType};
+use crate::fio::{common::Span, base::RefType, Type};
 use crate::fio::errors::ParseError;
 
 use super::{
