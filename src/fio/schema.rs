@@ -67,12 +67,11 @@ pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
 fn test_parse_schema() {
     use crate::fio::base::{BaseType};
     let content = "
-      @import finitio/data
+@import finitio/data
 
-      Number = .Number
-      Any = .
-      Integer = Number
-
+Number = .Number
+Any = .
+Integer = Number
   ";
     assert_eq!(
         parse_schema(content),
@@ -81,24 +80,29 @@ fn test_parse_schema() {
                 filename: "finitio/data".to_string(),
                 position: FilePosition {
                     line: 2,
-                    column: 15
+                    column: 9
                 },
             }],
             type_defs: vec![
                 TypeDef {
                     name: String::from("Number"),
+                    position: FilePosition { line: 4, column: 1 },
                     target: Type::BaseType(BaseType::Builtin(BuiltinType {
-                        name: String::from("Number")
+                        name: String::from("Number"),
+                        position: FilePosition { line: 4, column: 10 }
                     }))
                 },
                 TypeDef {
                     name: String::from("Any"),
-                    target: Type::BaseType(BaseType::Any)
+                    target: Type::BaseType(BaseType::Any),
+                    position: FilePosition { line: 5, column: 1 }
                 },
                 TypeDef {
                     name: String::from("Integer"),
+                    position: FilePosition { line: 6, column: 1 },
                     target: Type::BaseType(BaseType::Ref(RefType {
-                        name: String::from("Number")
+                        name: String::from("Number"),
+                        position: FilePosition { line: 6, column: 11 }
                     }))
                 },
             ]

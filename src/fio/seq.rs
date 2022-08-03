@@ -1,6 +1,6 @@
 #[cfg(test)]
 use crate::fio::common::assert_parse;
-
+use crate::common::FilePosition;
 use crate::fio::common::{parse_identifier, Span};
 use crate::fio::base::{parse_base_type, BaseType, RefType};
 use nom::{
@@ -51,7 +51,8 @@ fn test_parse_seq() {
         parse_seq(Span::new("[.Number]")),
         SeqType {
             elm_type: BaseType::Builtin(BuiltinType{
-                name: "Number".to_string()
+                name: "Number".to_string(),
+                position: FilePosition { line: 1, column: 2 }
             })
         }
     );
@@ -59,7 +60,8 @@ fn test_parse_seq() {
         parse_seq(Span::new("[Number]")),
         SeqType {
             elm_type: BaseType::Ref(RefType{
-                name: "Number".to_string()
+                name: "Number".to_string(),
+                position: FilePosition { line: 1, column: 2 }
             })
         }
     );
@@ -69,7 +71,8 @@ fn test_parse_seq() {
         parse_seq(Span::new("[   Number \n \t ]")),
         SeqType {
             elm_type: BaseType::Ref(RefType{
-                name: "Number".to_string()
+                name: "Number".to_string(),
+                position: FilePosition { line: 1, column: 5 }
             })
         }
     );

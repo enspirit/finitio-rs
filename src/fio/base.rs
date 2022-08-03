@@ -1,7 +1,7 @@
 #[cfg(test)]
 use crate::fio::common::assert_parse;
 
-use crate::fio::common::{parse_identifier, Span};
+use crate::{fio::common::{parse_identifier, Span}, common::FilePosition};
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -23,11 +23,13 @@ pub enum BaseType {
 #[derive(Debug, PartialEq)]
 pub struct BuiltinType {
     pub name: String,
+    pub position: FilePosition
 }
 
 #[derive(Debug, PartialEq)]
 pub struct RefType {
     pub name: String,
+    pub position: FilePosition
 }
 
 pub fn parse_nil(input: Span) -> IResult<Span, BaseType> {
@@ -42,6 +44,7 @@ pub fn parse_builtin(input: Span) -> IResult<Span, BaseType> {
     map(preceded(tag("."), parse_identifier), |name| {
         BaseType::Builtin(BuiltinType {
             name: String::from(name),
+            position: input.into()
         })
     })(input)
 }
@@ -50,6 +53,7 @@ pub fn parse_ref(input: Span) -> IResult<Span, BaseType> {
     map(parse_identifier, |name| {
         BaseType::Ref(RefType {
             name: String::from(name),
+            position: input.into()
         })
     })(input)
 }
@@ -82,6 +86,7 @@ fn test_parse_builtin() {
         parse_base_type(Span::new(".Number")),
         BaseType::Builtin(BuiltinType {
             name: String::from("Number"),
+            position: FilePosition { line: 1, column: 1 }
         }),
     );
 }
@@ -92,6 +97,7 @@ fn test_parse_ref() {
         parse_base_type(Span::new("Number")),
         BaseType::Ref(RefType {
             name: String::from("Number"),
+            position: FilePosition { line: 1, column: 1 }
         }),
     );
 }
