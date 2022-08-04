@@ -12,6 +12,7 @@ mod union;
 mod r#struct;
 mod sub;
 mod heading;
+mod tuple;
 mod r#type;
 mod typedef;
 
@@ -27,3 +28,4 @@ pub use set::SetType;
 pub use union::UnionType;
 pub use r#struct::StructType;
 pub use sub::SubType;
+pub use tuple::TupleType;

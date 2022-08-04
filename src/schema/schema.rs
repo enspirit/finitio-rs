@@ -4,6 +4,7 @@ use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
 use super::sub::Sub;
+use super::tuple::Tuple;
 use super::union::Union;
 use super::{
     builtin::Builtin, errors::ValidationError, r#ref::Ref, typedef::TypeDefStr, typemap::TypeMap,
@@ -103,6 +104,13 @@ impl Schema {
                     TypeDef::SubType(TypeDefStr {
                         name: typedef.name.clone(),
                         target: Rc::new(RefCell::new(Sub::from_fio(t))),
+                    }),
+                    &mut type_map,
+                ),
+                fio::Type::TupleType(t) => ns.add_type(
+                    TypeDef::TupleType(TypeDefStr {
+                        name: typedef.name.clone(),
+                        target: Rc::new(RefCell::new(Tuple::from_fio(t))),
                     }),
                     &mut type_map,
                 ),

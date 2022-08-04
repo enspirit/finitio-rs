@@ -9,6 +9,7 @@ use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
 use super::sub::Sub;
+use super::tuple::Tuple;
 use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
@@ -23,6 +24,7 @@ pub enum TypeDef {
     UnionType(TypeDefStr<Union>),
     StructType(TypeDefStr<Struct>),
     SubType(TypeDefStr<Sub>),
+    TupleType(TypeDefStr<Tuple>),
 }
 
 #[derive(Clone, Debug)]
@@ -43,6 +45,7 @@ impl TypeDef {
             TypeDef::UnionType(t) => t.name.clone(),
             TypeDef::StructType(t) => t.name.clone(),
             TypeDef::SubType(t) => t.name.clone(),
+            TypeDef::TupleType(t) => t.name.clone(),
         }
     }
 
@@ -57,6 +60,7 @@ impl TypeDef {
             TypeDef::UnionType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::StructType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::SubType(t) => t.target.borrow_mut().resolve(type_map),
+            TypeDef::TupleType(t) => t.target.borrow_mut().resolve(type_map),
         }
     }
 }

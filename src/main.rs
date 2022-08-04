@@ -12,6 +12,7 @@ Null = Nil
 Any = .
 Number = .Number
 Integer = Number
+String = .String
 
 Seq = [Integer]
 Set = {Integer}
@@ -23,6 +24,11 @@ Union = Number | Integer | Nil
 Struct = <Number | Integer, Nil>
 
 PosInteger = Integer(i | i > 0)
+
+Tuple = {
+    name          :   String,
+    optional_age  :?  Number
+}
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

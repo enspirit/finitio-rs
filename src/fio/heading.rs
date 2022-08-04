@@ -35,7 +35,7 @@ pub struct Attribute {
   pub position: FilePosition,
 }
 
-pub fn parse_separator(input: Span) -> IResult<Span, char> {
+fn parse_separator(input: Span) -> IResult<Span, char> {
   preceded(ws, char(','))(input)
 }
 
@@ -55,8 +55,16 @@ fn parse_attribute(input: Span) -> IResult<Span, Attribute> {
   )(input)
 }
 
+pub fn parse_heading(input: Span) -> IResult<Span, Heading> {
+  map(parse_attributes, |attributes| {
+    Heading {
+      attributes,
+      position: input.into()
+    }
+  })(input)
+}
 
-fn parse_heading(input: Span) -> IResult<Span, Vec<Attribute>> {
+fn parse_attributes(input: Span) -> IResult<Span, Vec<Attribute>> {
   context(
     "fields",
     delimited(
@@ -124,17 +132,17 @@ fn test_parse_attribute_optional() {
 }
 
 #[test]
-fn test_parse_heading_0() {
+fn test_parse_attributes_0() {
     let contents = ["{}", "{ }"];
     for content in contents.iter() {
-        assert_parse(parse_heading(Span::new(content)), vec![])
+        assert_parse(parse_attributes(Span::new(content)), vec![])
     }
 }
 
 #[test]
-fn test_parse_heading_simple() {
+fn test_parse_attributes_simple() {
     assert_parse(
-        parse_heading(Span::new("{name: String}")),
+        parse_attributes(Span::new("{name: String}")),
         vec![
           Attribute {
             name: "name".to_string(),
@@ -150,9 +158,9 @@ fn test_parse_heading_simple() {
 }
 
 #[test]
-fn test_parse_heading_duo() {
+fn test_parse_attributes_duo() {
     assert_parse(
-        parse_heading(Span::new("{name: String, age: Number}")),
+        parse_attributes(Span::new("{name: String, age: Number}")),
         vec![
           Attribute {
             name: "name".to_string(),
@@ -177,13 +185,13 @@ fn test_parse_heading_duo() {
 }
 
 #[test]
-fn test_parse_heading_spacing() {
+fn test_parse_attributes_spacing() {
     let heading = "{
       name :  String,
       age  :? Number
     }";
     assert_parse(
-        parse_heading(Span::new(heading)),
+        parse_attributes(Span::new(heading)),
         vec![
           Attribute {
             name: "name".to_string(),
