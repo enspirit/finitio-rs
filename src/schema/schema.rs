@@ -3,6 +3,7 @@ use super::nil::Nil;
 use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
+use super::sub::Sub;
 use super::union::Union;
 use super::{
     builtin::Builtin, errors::ValidationError, r#ref::Ref, typedef::TypeDefStr, typemap::TypeMap,
@@ -95,6 +96,13 @@ impl Schema {
                     TypeDef::StructType(TypeDefStr {
                         name: typedef.name.clone(),
                         target: Rc::new(RefCell::new(Struct::from_fio(t))),
+                    }),
+                    &mut type_map,
+                ),
+                fio::Type::SubType(t) => ns.add_type(
+                    TypeDef::SubType(TypeDefStr {
+                        name: typedef.name.clone(),
+                        target: Rc::new(RefCell::new(Sub::from_fio(t))),
                     }),
                     &mut type_map,
                 ),

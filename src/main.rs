@@ -21,6 +21,8 @@ Complex = {{[Set]}}
 Union = Number | Integer | Nil
 
 Struct = <Number | Integer, Nil>
+
+PosInteger = Integer(i | i > 0)
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

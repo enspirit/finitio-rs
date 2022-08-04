@@ -11,6 +11,7 @@ use super::r#ref::Ref;
 use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
+use super::sub::Sub;
 use super::typedef::TypeDef;
 use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
@@ -25,6 +26,7 @@ pub enum Type {
     Set(Set),
     Union(Union),
     Struct(Struct),
+    Sub(Sub),
 }
 
 #[derive(Clone, Debug)]
@@ -37,6 +39,7 @@ pub enum TypeRef {
     Set(SetRef),
     Union(UnionRef),
     Struct(StructRef),
+    Sub(SubRef),
     Unresolved {
         name: String,
         position: FilePosition,
@@ -82,6 +85,11 @@ pub struct StructRef {
     pub struct_: Weak<RefCell<Struct>>,
 }
 
+#[derive(Clone, Debug)]
+pub struct SubRef {
+    pub sub_: Weak<RefCell<Sub>>,
+}
+
 impl TypeRef {
     pub fn position(&self) -> FilePosition {
         match self {
@@ -93,6 +101,7 @@ impl TypeRef {
             Self::Set(r) => r.set_.upgrade().unwrap().borrow().position.clone(),
             Self::Union(r) => r.union_.upgrade().unwrap().borrow().position.clone(),
             Self::Struct(r) => r.struct_.upgrade().unwrap().borrow().position.clone(),
+            Self::Sub(r) => r.sub_.upgrade().unwrap().borrow().position.clone(),
             Self::Unresolved { name: _name, position } => position.clone(),
         }
     }
@@ -125,6 +134,9 @@ impl TypeRef {
                     TypeDef::StructType(struct_) => TypeRef::Struct(StructRef {
                         struct_: Rc::downgrade(&struct_.target),
                     }),
+                    TypeDef::SubType(sub_) => TypeRef::Sub(SubRef {
+                        sub_: Rc::downgrade(&sub_.target),
+                    }),
                 },
                 None => {
                     return Err(ValidationError::NoSuchType {
@@ -152,6 +164,7 @@ impl Type {
             fio::Type::SetType(t) => Self::Set(Set::from_fio(t)),
             fio::Type::UnionType(t) => Self::Union(Union::from_fio(t)),
             fio::Type::StructType(t) => Self::Struct(Struct::from_fio(t)),
+            fio::Type::SubType(t) => Self::Sub(Sub::from_fio(t)),
         }
     }
 
@@ -171,6 +184,7 @@ impl Type {
             Self::Set(sref) => sref.resolve(type_map),
             Self::Union(uref) => uref.resolve(type_map),
             Self::Struct(sref) => sref.resolve(type_map),
+            Self::Sub(sref) => sref.resolve(type_map),
         }
     }
 }

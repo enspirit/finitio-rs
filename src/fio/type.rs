@@ -8,7 +8,9 @@ use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
 
 use crate::fio::Span;
 
+use super::SubType;
 use super::r#struct::{StructType, parse_struct};
+use super::sub::parse_sub;
 use super::union::{UnionType, parse_union};
 use super::{
     any::{parse_any, AnyType},
@@ -29,10 +31,12 @@ pub enum Type {
     SetType(SetType),
     UnionType(UnionType),
     StructType(StructType),
+    SubType(SubType),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
     alt((
+        map(preceded(ws, parse_sub), Type::SubType),
         map(preceded(ws, parse_struct), Type::StructType),
         map(preceded(ws, parse_union), Type::UnionType),
         map(preceded(ws, parse_builtin), Type::BuiltinType),
@@ -48,9 +52,25 @@ pub fn parse_type(input: Span) -> IResult<Span, Type> {
 // The problem is if parse_union uses parse_type which tries to parse a union (stackoverflow)
 pub fn parse_type_but_union(input: Span) -> IResult<Span, Type> {
     alt((
+        map(preceded(ws, parse_sub), Type::SubType),
+        map(preceded(ws, parse_struct), Type::StructType),
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
         map(preceded(ws, parse_nil), Type::NilType),
+        map(preceded(ws, parse_ref), Type::RefType),
+        map(preceded(ws, parse_seq), Type::SeqType),
+        map(preceded(ws, parse_set), Type::SetType),
+    ))(input)
+}
+
+
+// Don't know how to do that without this duplication.
+// The problem is if parse_sub uses parse_type which tries to parse a sub (stackoverflow)
+pub fn parse_subtypeable(input: Span) -> IResult<Span, Type> {
+    alt((
+        map(preceded(ws, parse_struct), Type::StructType),
+        map(preceded(ws, parse_builtin), Type::BuiltinType),
+        map(preceded(ws, parse_any), Type::AnyType),
         map(preceded(ws, parse_ref), Type::RefType),
         map(preceded(ws, parse_seq), Type::SeqType),
         map(preceded(ws, parse_set), Type::SetType),
@@ -114,3 +134,22 @@ fn test_parse_type_struct() {
     );
 
 }
+
+// #[test]
+// fn test_parse_type_sub() {
+//     // Sub (with spaces)
+//     assert_parse(
+//         parse_type(Span::new(" Number(i | i > 0)")),
+//         Type::SubType(SubType {
+//             base: Box::new(Type::RefType(RefType {
+//                 name: "Number".to_string(),
+//                 position: FilePosition { line: 1, column: 2 }
+//             })),
+//             constraints: vec![
+
+//             ],
+//             position: FilePosition { line: 1, column: 2 },
+//         },),
+//     );
+
+// }

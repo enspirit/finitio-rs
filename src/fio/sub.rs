@@ -1,7 +1,16 @@
+use super::any::parse_any;
+use super::builtin::parse_builtin;
+use super::errors::ParseError;
+use super::nil::parse_nil;
+use super::r#ref::parse_ref;
+use super::r#struct::parse_struct;
+use super::seq::parse_seq;
+use super::set::parse_set;
 #[cfg(test)]
 use super::{any, builtin, nil, r#ref};
 #[cfg(test)]
 use crate::fio::common::assert_parse;
+use crate::fio::r#type::parse_subtypeable;
 
 use super::{Type, NilType, RefType, SeqType, UnionType, BuiltinType};
 use crate::common::FilePosition;
@@ -9,12 +18,12 @@ use crate::fio::common::Span;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, take_until1, escaped_transform, take_till};
 use nom::character::complete::alphanumeric1;
-use nom::combinator::{map_parser, rest, not, recognize};
+use nom::combinator::{map_parser, rest, not, recognize, peek};
 use nom::multi::{separated_list1, separated_list0};
 use nom::sequence::{preceded, terminated, pair, separated_pair};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 
-use super::common::{ws, take_until_unbalanced};
+use super::common::{ws, take_until_unbalanced, parse_identifier};
 use super::r#type::{parse_type, parse_type_but_union};
 
 #[derive(Debug, PartialEq)]
@@ -62,21 +71,47 @@ pub fn parse_anonymous_constraint(input: Span) -> IResult<Span, Constraint> {
     )(input)
 }
 
-pub fn parse_sub_type(input: Span) -> IResult<Span, SubType> {
-    map(
-        separated_pair(
-            parse_type,
-            ws,
-            parse_anonymous_constraint
-        ),
-        |(ftype, constraint)| {
-            SubType {
-                base: Box::new(ftype),
-                constraints: vec![constraint],
-                position: input.into()
-            }
+pub fn check_looks_like_sub(input: Span) -> IResult<Span, bool> {
+    // First we ensure that it looks like a subtype
+    let types = alt((
+        map(parse_builtin, |_| {}),
+        map(parse_ref, |_| {}),
+        map(parse_seq, |_| {}),
+        map(parse_set, |_| {}),
+        map(parse_struct, |_| {}),
+        map(parse_any, |_|{}),
+    ));
+    let check = separated_pair(types, ws, tag("("));
+    match peek(check)(input) {
+        Ok(_s) => Ok((input, true)),
+        Err(err) => Err(err)
+    }
+}
+
+pub fn parse_sub(input: Span) -> IResult<Span, SubType> {
+    // First we ensure that it looks like a subtype
+    match peek(check_looks_like_sub)(input) {
+        Err(err) => {
+            Err(err)
+        },
+        Ok(_) => {
+            println!("nope nop nope {}", input.clone());
+            map(
+                separated_pair(
+                    parse_subtypeable,
+                    ws,
+                    parse_anonymous_constraint
+                ),
+                |(ftype, constraint)| {
+                    SubType {
+                        base: Box::new(ftype),
+                        constraints: vec![constraint],
+                        position: input.into()
+                    }
+                }
+            )(input)
         }
-    )(input)
+    }
 }
 
 #[test]
@@ -101,9 +136,17 @@ fn test_parse_anonymous_constraint() {
 }
 
 #[test]
+fn test_check_looks_like_sub() {
+    let output = check_looks_like_sub(Span::new("Number(s | foo bar baz)"));
+    let output = output.unwrap();
+    assert_eq!(output.0.fragment(), &"Number(s | foo bar baz)");
+    assert_eq!(output.1, true);
+}
+
+#[test]
 fn test_parse_sub_type_builtin() {
     assert_parse(
-        parse_sub_type(Span::new(".Number(s | some anonymous constraint)")),
+        parse_sub(Span::new(".Number(s | some anonymous constraint)")),
         SubType {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::BuiltinType(BuiltinType {
@@ -124,7 +167,7 @@ fn test_parse_sub_type_builtin() {
 #[test]
 fn test_parse_sub_type_seq() {
     assert_parse(
-        parse_sub_type(Span::new("[.Number](s | some anonymous constraint)")),
+        parse_sub(Span::new("[.Number](s | some anonymous constraint)")),
         SubType {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(
@@ -150,7 +193,7 @@ fn test_parse_sub_type_seq() {
 #[test]
 fn test_parse_sub_type_spacing() {
     assert_parse(
-        parse_sub_type(Span::new("[ .Number ] (   s  |   \nsome anonymous constraint)")),
+        parse_sub(Span::new("[ .Number ] (   s  |   \nsome anonymous constraint)")),
         SubType {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(

@@ -8,6 +8,7 @@ mod seq;
 mod set;
 mod union;
 mod r#struct;
+mod sub;
 mod r#type;
 mod typedef;
 mod typemap;
