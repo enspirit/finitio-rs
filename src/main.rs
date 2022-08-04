@@ -29,8 +29,14 @@ Tuple = {
     name          :   String,
     optional_age  :?  Number
 }
-
 Relation = {{ name: String, age: Number }}
+
+Password = String( s | s.length >= 8 )
+User = {
+    name: String,
+    password: Password,
+    confirm: Password
+}( t | t.password == t.confirm )
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

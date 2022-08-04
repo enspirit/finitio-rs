@@ -9,7 +9,7 @@ use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
 use crate::fio::Span;
 
 use super::r#struct::{parse_struct, StructType};
-use super::relation::RelationType;
+use super::relation::{RelationType, parse_relation};
 use super::sub::parse_sub;
 use super::tuple::{parse_tuple, TupleType};
 use super::union::{parse_union, UnionType};
@@ -78,6 +78,8 @@ pub fn parse_subtypeable(input: Span) -> IResult<Span, Type> {
         map(preceded(ws, parse_ref), Type::RefType),
         map(preceded(ws, parse_seq), Type::SeqType),
         map(preceded(ws, parse_set), Type::SetType),
+        map(preceded(ws, parse_tuple), Type::TupleType),
+        map(preceded(ws, parse_relation), Type::RelationType),
     ))(input)
 }
 

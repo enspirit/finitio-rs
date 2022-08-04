@@ -4,8 +4,10 @@ use super::errors::ParseError;
 use super::nil::parse_nil;
 use super::r#ref::parse_ref;
 use super::r#struct::parse_struct;
+use super::relation::parse_relation;
 use super::seq::parse_seq;
 use super::set::parse_set;
+use super::tuple::parse_tuple;
 #[cfg(test)]
 use super::{any, builtin, nil, r#ref};
 #[cfg(test)]
@@ -67,6 +69,8 @@ pub fn check_looks_like_sub(input: Span) -> IResult<Span, bool> {
         map(parse_seq, |_| {}),
         map(parse_set, |_| {}),
         map(parse_struct, |_| {}),
+        map(parse_tuple, |_| {}),
+        map(parse_relation, |_| {}),
         map(parse_any, |_| {}),
     ));
     let check = separated_pair(types, ws, tag("("));
