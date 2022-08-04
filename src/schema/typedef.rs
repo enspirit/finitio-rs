@@ -5,6 +5,7 @@ use super::any::Any;
 use super::builtin::Builtin;
 use super::nil::Nil;
 use super::r#ref::Ref;
+use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
 use super::union::Union;
@@ -19,6 +20,7 @@ pub enum TypeDef {
     SeqType(TypeDefStr<Seq>),
     SetType(TypeDefStr<Set>),
     UnionType(TypeDefStr<Union>),
+    StructType(TypeDefStr<Struct>),
 }
 
 #[derive(Clone, Debug)]
@@ -37,6 +39,7 @@ impl TypeDef {
             TypeDef::SeqType(t) => t.name.clone(),
             TypeDef::SetType(t) => t.name.clone(),
             TypeDef::UnionType(t) => t.name.clone(),
+            TypeDef::StructType(t) => t.name.clone(),
         }
     }
 
@@ -49,6 +52,7 @@ impl TypeDef {
             TypeDef::SeqType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::SetType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::UnionType(t) => t.target.borrow_mut().resolve(type_map),
+            TypeDef::StructType(t) => t.target.borrow_mut().resolve(type_map),
         }
     }
 }

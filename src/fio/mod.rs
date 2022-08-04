@@ -9,6 +9,7 @@ mod schema;
 mod seq;
 mod set;
 mod union;
+mod r#struct;
 mod r#type;
 mod typedef;
 
@@ -22,3 +23,4 @@ pub use schema::{parse_schema, Schema};
 pub use seq::SeqType;
 pub use set::SetType;
 pub use union::UnionType;
+pub use r#struct::StructType;

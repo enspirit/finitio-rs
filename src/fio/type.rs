@@ -8,6 +8,7 @@ use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
 
 use crate::fio::Span;
 
+use super::r#struct::{StructType, parse_struct};
 use super::union::{UnionType, parse_union};
 use super::{
     any::{parse_any, AnyType},
@@ -27,10 +28,12 @@ pub enum Type {
     SeqType(SeqType),
     SetType(SetType),
     UnionType(UnionType),
+    StructType(StructType),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
     alt((
+        map(preceded(ws, parse_struct), Type::StructType),
         map(preceded(ws, parse_union), Type::UnionType),
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
@@ -91,6 +94,23 @@ fn test_parse_type_seq() {
                 position: FilePosition { line: 1, column: 4 },
             })),
         }),
+    );
+
+}
+
+#[test]
+fn test_parse_type_struct() {
+// // Seq (with spaces)
+    assert_parse(
+        parse_type(Span::new(" < Nil >")),
+        Type::StructType(StructType {
+            elements: vec![
+                Type::NilType(NilType {
+                    position: FilePosition { line: 1, column: 4 },
+                }),
+            ],
+            position: FilePosition { line: 1, column: 2 },
+        },),
     );
 
 }

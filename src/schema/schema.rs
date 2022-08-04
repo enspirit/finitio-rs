@@ -1,5 +1,6 @@
 use super::any::Any;
 use super::nil::Nil;
+use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
 use super::union::Union;
@@ -87,6 +88,13 @@ impl Schema {
                     TypeDef::UnionType(TypeDefStr {
                         name: typedef.name.clone(),
                         target: Rc::new(RefCell::new(Union::from_fio(t))),
+                    }),
+                    &mut type_map,
+                ),
+                fio::Type::StructType(t) => ns.add_type(
+                    TypeDef::StructType(TypeDefStr {
+                        name: typedef.name.clone(),
+                        target: Rc::new(RefCell::new(Struct::from_fio(t))),
                     }),
                     &mut type_map,
                 ),

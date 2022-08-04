@@ -8,6 +8,7 @@ use super::any::Any;
 use super::builtin::Builtin;
 use super::nil::Nil;
 use super::r#ref::Ref;
+use super::r#struct::Struct;
 use super::seq::Seq;
 use super::set::Set;
 use super::typedef::TypeDef;
@@ -23,6 +24,7 @@ pub enum Type {
     Seq(Seq),
     Set(Set),
     Union(Union),
+    Struct(Struct),
 }
 
 #[derive(Clone, Debug)]
@@ -34,6 +36,7 @@ pub enum TypeRef {
     Seq(SeqRef),
     Set(SetRef),
     Union(UnionRef),
+    Struct(StructRef),
     Unresolved {
         name: String,
         position: FilePosition,
@@ -74,6 +77,11 @@ pub struct UnionRef {
     pub union_: Weak<RefCell<Union>>,
 }
 
+#[derive(Clone, Debug)]
+pub struct StructRef {
+    pub struct_: Weak<RefCell<Struct>>,
+}
+
 impl TypeRef {
     pub fn position(&self) -> FilePosition {
         match self {
@@ -84,6 +92,7 @@ impl TypeRef {
             Self::Seq(r) => r.seq_.upgrade().unwrap().borrow().position.clone(),
             Self::Set(r) => r.set_.upgrade().unwrap().borrow().position.clone(),
             Self::Union(r) => r.union_.upgrade().unwrap().borrow().position.clone(),
+            Self::Struct(r) => r.struct_.upgrade().unwrap().borrow().position.clone(),
             Self::Unresolved { name: _name, position } => position.clone(),
         }
     }
@@ -113,6 +122,9 @@ impl TypeRef {
                     TypeDef::UnionType(union_) => TypeRef::Union(UnionRef {
                         union_: Rc::downgrade(&union_.target),
                     }),
+                    TypeDef::StructType(struct_) => TypeRef::Struct(StructRef {
+                        struct_: Rc::downgrade(&struct_.target),
+                    }),
                 },
                 None => {
                     return Err(ValidationError::NoSuchType {
@@ -139,6 +151,7 @@ impl Type {
             fio::Type::SeqType(t) => Self::Seq(Seq::from_fio(t)),
             fio::Type::SetType(t) => Self::Set(Set::from_fio(t)),
             fio::Type::UnionType(t) => Self::Union(Union::from_fio(t)),
+            fio::Type::StructType(t) => Self::Struct(Struct::from_fio(t)),
         }
     }
 
@@ -157,6 +170,7 @@ impl Type {
             Self::Seq(sref) => sref.resolve(type_map),
             Self::Set(sref) => sref.resolve(type_map),
             Self::Union(uref) => uref.resolve(type_map),
+            Self::Struct(sref) => sref.resolve(type_map),
         }
     }
 }
