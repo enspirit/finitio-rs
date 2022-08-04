@@ -18,7 +18,9 @@ pub enum Type {
   Nil(FilePosition),
   Any(FilePosition),
   Builtin(String),
-  Ref(TypeRef)
+  Ref(TypeRef),
+  Seq(Seq),
+  Set(Set),
 }
 
 #[derive(Clone,Debug)]
@@ -121,8 +123,8 @@ impl Type {
         fio::Type::AnyType(t) => Self::Any(t.position.clone()),
         fio::Type::BuiltinType(t) => Self::Builtin(t.name.clone()),
         fio::Type::RefType(t) => Self::Ref(TypeRef::Unresolved { name: t.name.clone(), position: t.position.clone() }),
-        fio::Type::SeqType(_) => todo!(),
-        fio::Type::SetType(_) => todo!(),
+        fio::Type::SeqType(t) => Self::Seq(Seq::from_fio(t)),
+        fio::Type::SetType(t) => Self::Set(Set::from_fio(t)),
     }
   }
 
@@ -142,6 +144,8 @@ impl Type {
         | Self::Builtin(_) => Ok(()), // Should probably not consider all Builtin ok here?
 
         Self::Ref(tref) => tref.resolve(type_map),
+        Self::Seq(sref) => sref.resolve(type_map),
+        Self::Set(sref) => sref.resolve(type_map),
     }
   }
 }

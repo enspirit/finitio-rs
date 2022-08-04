@@ -13,7 +13,7 @@ use super::TypeRef;
 
 #[derive(Clone,Debug)]
 pub struct Seq {
-    pub elm_type: Type,
+    pub elm_type: Box<Type>,
     pub position: FilePosition,
 }
 
@@ -22,7 +22,10 @@ impl Seq {
         fseq: &fio::SeqType
     ) -> Self {
         let elm_type = Type::from_fio(&fseq.elm_type);
-        Self { elm_type: elm_type, position: fseq.position.clone() }
+        Self {
+            elm_type: Box::new(elm_type),
+            position: fseq.position.clone()
+        }
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {

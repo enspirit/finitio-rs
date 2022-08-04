@@ -15,6 +15,8 @@ Integer = Number
 
 Seq = [Integer]
 Set = {Integer}
+
+Complex = {{[Set]}}
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

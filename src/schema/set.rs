@@ -13,7 +13,7 @@ use super::TypeRef;
 
 #[derive(Clone,Debug)]
 pub struct Set {
-    pub elm_type: Type,
+    pub elm_type: Box<Type>,
     pub position: FilePosition,
 }
 
@@ -22,7 +22,10 @@ impl Set {
         fset: &fio::SetType
     ) -> Self {
         let elm_type = Type::from_fio(&fset.elm_type);
-        Self { elm_type: elm_type, position: fset.position.clone() }
+        Self {
+            elm_type: Box::new(elm_type),
+            position: fset.position.clone()
+        }
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
