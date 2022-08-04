@@ -81,7 +81,6 @@ pub fn parse_sub(input: Span) -> IResult<Span, SubType> {
     match peek(check_looks_like_sub)(input) {
         Err(err) => Err(err),
         Ok(_) => {
-            println!("nope nop nope {}", input.clone());
             map(
                 separated_pair(parse_subtypeable, ws, parse_anonymous_constraint),
                 |(ftype, constraint)| SubType {
