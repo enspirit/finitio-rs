@@ -8,12 +8,12 @@ use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
 
 use crate::fio::Span;
 
-use super::SubType;
-use super::r#struct::{StructType, parse_struct};
+use super::r#struct::{parse_struct, StructType};
 use super::relation::RelationType;
 use super::sub::parse_sub;
-use super::tuple::{TupleType, parse_tuple};
-use super::union::{UnionType, parse_union};
+use super::tuple::{parse_tuple, TupleType};
+use super::union::{parse_union, UnionType};
+use super::SubType;
 use super::{
     any::{parse_any, AnyType},
     builtin::parse_builtin,
@@ -68,7 +68,6 @@ pub fn parse_type_but_union(input: Span) -> IResult<Span, Type> {
     ))(input)
 }
 
-
 // Don't know how to do that without this duplication.
 // The problem is if parse_sub uses parse_type which tries to parse a sub (stackoverflow)
 pub fn parse_subtypeable(input: Span) -> IResult<Span, Type> {
@@ -91,7 +90,6 @@ fn test_parse_type_nil() {
             position: FilePosition { line: 1, column: 2 },
         }),
     );
-
 }
 
 #[test]
@@ -104,12 +102,11 @@ fn test_parse_type_ref() {
             position: FilePosition { line: 1, column: 2 },
         }),
     );
-
 }
 
 #[test]
 fn test_parse_type_seq() {
-// // Seq (with spaces)
+    // // Seq (with spaces)
     assert_parse(
         parse_type(Span::new(" [ Number ]")),
         Type::SeqType(SeqType {
@@ -120,24 +117,20 @@ fn test_parse_type_seq() {
             })),
         }),
     );
-
 }
 
 #[test]
 fn test_parse_type_struct() {
-// // Seq (with spaces)
+    // // Seq (with spaces)
     assert_parse(
         parse_type(Span::new(" < Nil >")),
         Type::StructType(StructType {
-            elements: vec![
-                Type::NilType(NilType {
-                    position: FilePosition { line: 1, column: 4 },
-                }),
-            ],
+            elements: vec![Type::NilType(NilType {
+                position: FilePosition { line: 1, column: 4 },
+            })],
             position: FilePosition { line: 1, column: 2 },
-        },),
+        }),
     );
-
 }
 
 // #[test]

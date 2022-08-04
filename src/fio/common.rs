@@ -2,8 +2,8 @@ use nom::{
     bytes::complete::{take_while, take_while1},
     character::complete::char,
     combinator::{map, opt},
-    sequence::{pair, preceded},
     error::{Error, ErrorKind, ParseError},
+    sequence::{pair, preceded},
     Err, IResult,
 };
 use nom_locate::LocatedSpan;
@@ -46,7 +46,7 @@ pub fn parse_identifier(input: Span) -> IResult<Span, String> {
 pub fn take_until_unbalanced(
     opening_bracket: char,
     closing_bracket: char,
-  ) -> impl Fn(&str) -> IResult<&str, &str> {
+) -> impl Fn(&str) -> IResult<&str, &str> {
     move |i: &str| {
         let mut index = 0;
         let mut bracket_counter = 0;
@@ -87,7 +87,7 @@ pub fn take_until_unbalanced(
             Err(Err::Error(Error::from_error_kind(i, ErrorKind::TakeUntil)))
         }
     }
-  }
+}
 
 #[cfg(test)]
 pub(crate) fn assert_parse<'a, T: std::fmt::Debug + PartialEq>(

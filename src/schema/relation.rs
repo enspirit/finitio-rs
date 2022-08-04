@@ -21,13 +21,15 @@ pub struct Attribute {
 
 impl Relation {
     pub(crate) fn from_fio(ftuple: &fio::RelationType) -> Self {
-        let attributes = ftuple.heading.attributes
+        let attributes = ftuple
+            .heading
+            .attributes
             .iter()
             .map(|att| {
                 let att_type = Type::from_fio(&att.att_type);
                 Attribute {
                     name: att.name.to_string(),
-                    att_type
+                    att_type,
                 }
             })
             .collect();

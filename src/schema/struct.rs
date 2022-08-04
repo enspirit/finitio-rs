@@ -13,7 +13,8 @@ pub struct Struct {
 
 impl Struct {
     pub(crate) fn from_fio(fstruct: &fio::StructType) -> Self {
-        let elements = fstruct.elements
+        let elements = fstruct
+            .elements
             .iter()
             .map(|ftype| Type::from_fio(ftype))
             .collect();

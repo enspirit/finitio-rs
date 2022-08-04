@@ -12,39 +12,36 @@ use super::{any, builtin, nil, r#ref};
 use crate::fio::common::assert_parse;
 use crate::fio::r#type::parse_subtypeable;
 
-use super::{Type, NilType, RefType, SeqType, UnionType, BuiltinType};
+use super::{BuiltinType, NilType, RefType, SeqType, Type, UnionType};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
 use nom::branch::alt;
-use nom::bytes::complete::{is_not, take_until1, escaped_transform, take_till};
+use nom::bytes::complete::{escaped_transform, is_not, take_till, take_until1};
 use nom::character::complete::alphanumeric1;
-use nom::combinator::{map_parser, rest, not, recognize, peek};
-use nom::multi::{separated_list1, separated_list0};
-use nom::sequence::{preceded, terminated, pair, separated_pair};
+use nom::combinator::{map_parser, not, peek, recognize, rest};
+use nom::multi::{separated_list0, separated_list1};
+use nom::sequence::{pair, preceded, separated_pair, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 
-use super::common::{ws, take_until_unbalanced, parse_identifier};
+use super::common::{parse_identifier, take_until_unbalanced, ws};
 use super::r#type::{parse_type, parse_type_but_union};
 
 #[derive(Debug, PartialEq)]
 pub struct Constraint {
     pub param: String,
     pub expr: String,
-    pub position: FilePosition
+    pub position: FilePosition,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct SubType {
     pub base: Box<Type>,
     pub constraints: Vec<Constraint>,
-    pub position: FilePosition
+    pub position: FilePosition,
 }
 
 pub fn parse_parenth_content(input: Span) -> IResult<Span, String> {
-    let parser = escaped_transform(
-        is_not("\\)"), '\\', alt((
-            map(tag(")"), |_| "\\)"),
-        )));
+    let parser = escaped_transform(is_not("\\)"), '\\', alt((map(tag(")"), |_| "\\)"),)));
 
     map(parser, |s| s)(input)
 }
@@ -53,22 +50,13 @@ pub fn parse_anonymous_constraint(input: Span) -> IResult<Span, Constraint> {
     let param = preceded(ws, terminated(alphanumeric1, preceded(ws, tag("|"))));
     let anonymous = preceded(ws, parse_parenth_content);
 
-    let parser = delimited(
-        tag("("),
-        pair(param, anonymous),
-        tag(")")
-    );
+    let parser = delimited(tag("("), pair(param, anonymous), tag(")"));
 
-    map(
-        parser,
-        |(param, content)| {
-            Constraint {
-                param: param.to_string(),
-                expr: content,
-                position: input.into()
-            }
-        }
-    )(input)
+    map(parser, |(param, content)| Constraint {
+        param: param.to_string(),
+        expr: content,
+        position: input.into(),
+    })(input)
 }
 
 pub fn check_looks_like_sub(input: Span) -> IResult<Span, bool> {
@@ -79,36 +67,28 @@ pub fn check_looks_like_sub(input: Span) -> IResult<Span, bool> {
         map(parse_seq, |_| {}),
         map(parse_set, |_| {}),
         map(parse_struct, |_| {}),
-        map(parse_any, |_|{}),
+        map(parse_any, |_| {}),
     ));
     let check = separated_pair(types, ws, tag("("));
     match peek(check)(input) {
         Ok(_s) => Ok((input, true)),
-        Err(err) => Err(err)
+        Err(err) => Err(err),
     }
 }
 
 pub fn parse_sub(input: Span) -> IResult<Span, SubType> {
     // First we ensure that it looks like a subtype
     match peek(check_looks_like_sub)(input) {
-        Err(err) => {
-            Err(err)
-        },
+        Err(err) => Err(err),
         Ok(_) => {
             println!("nope nop nope {}", input.clone());
             map(
-                separated_pair(
-                    parse_subtypeable,
-                    ws,
-                    parse_anonymous_constraint
-                ),
-                |(ftype, constraint)| {
-                    SubType {
-                        base: Box::new(ftype),
-                        constraints: vec![constraint],
-                        position: input.into()
-                    }
-                }
+                separated_pair(parse_subtypeable, ws, parse_anonymous_constraint),
+                |(ftype, constraint)| SubType {
+                    base: Box::new(ftype),
+                    constraints: vec![constraint],
+                    position: input.into(),
+                },
             )(input)
         }
     }
@@ -130,7 +110,7 @@ fn test_parse_anonymous_constraint() {
         Constraint {
             param: "s".to_string(),
             expr: "some anonymous constraint".to_string(),
-            position: FilePosition { line: 1, column: 1 }
+            position: FilePosition { line: 1, column: 1 },
         },
     );
 }
@@ -151,15 +131,13 @@ fn test_parse_sub_type_builtin() {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::BuiltinType(BuiltinType {
                 name: "Number".to_string(),
-                position: FilePosition { line: 1, column: 1 }
+                position: FilePosition { line: 1, column: 1 },
             })),
-            constraints: vec![
-                Constraint {
-                    param: "s".to_string(),
-                    expr: "some anonymous constraint".to_string(),
-                    position: FilePosition { line: 1, column: 8 }
-                }
-            ]
+            constraints: vec![Constraint {
+                param: "s".to_string(),
+                expr: "some anonymous constraint".to_string(),
+                position: FilePosition { line: 1, column: 8 },
+            }],
         },
     );
 }
@@ -170,22 +148,21 @@ fn test_parse_sub_type_seq() {
         parse_sub(Span::new("[.Number](s | some anonymous constraint)")),
         SubType {
             position: FilePosition { line: 1, column: 1 },
-            base: Box::new(
-                Type::SeqType(SeqType {
-                    elm_type: Box::new(Type::BuiltinType(BuiltinType {
-                        name: "Number".to_string(),
-                        position: FilePosition { line: 1, column: 2 }
-                    })),
-                    position: FilePosition { line: 1, column: 1 },
-                }),
-            ),
-            constraints: vec![
-                Constraint {
-                    param: "s".to_string(),
-                    expr: "some anonymous constraint".to_string(),
-                    position: FilePosition { line: 1, column: 10 }
-                }
-            ]
+            base: Box::new(Type::SeqType(SeqType {
+                elm_type: Box::new(Type::BuiltinType(BuiltinType {
+                    name: "Number".to_string(),
+                    position: FilePosition { line: 1, column: 2 },
+                })),
+                position: FilePosition { line: 1, column: 1 },
+            })),
+            constraints: vec![Constraint {
+                param: "s".to_string(),
+                expr: "some anonymous constraint".to_string(),
+                position: FilePosition {
+                    line: 1,
+                    column: 10,
+                },
+            }],
         },
     );
 }
@@ -193,25 +170,26 @@ fn test_parse_sub_type_seq() {
 #[test]
 fn test_parse_sub_type_spacing() {
     assert_parse(
-        parse_sub(Span::new("[ .Number ] (   s  |   \nsome anonymous constraint)")),
+        parse_sub(Span::new(
+            "[ .Number ] (   s  |   \nsome anonymous constraint)",
+        )),
         SubType {
             position: FilePosition { line: 1, column: 1 },
-            base: Box::new(
-                Type::SeqType(SeqType {
-                    elm_type: Box::new(Type::BuiltinType(BuiltinType {
-                        name: "Number".to_string(),
-                        position: FilePosition { line: 1, column: 3 }
-                    })),
-                    position: FilePosition { line: 1, column: 1 },
-                }),
-            ),
-            constraints: vec![
-                Constraint {
-                    param: "s".to_string(),
-                    expr: "some anonymous constraint".to_string(),
-                    position: FilePosition { line: 1, column: 13 }
-                }
-            ]
+            base: Box::new(Type::SeqType(SeqType {
+                elm_type: Box::new(Type::BuiltinType(BuiltinType {
+                    name: "Number".to_string(),
+                    position: FilePosition { line: 1, column: 3 },
+                })),
+                position: FilePosition { line: 1, column: 1 },
+            })),
+            constraints: vec![Constraint {
+                param: "s".to_string(),
+                expr: "some anonymous constraint".to_string(),
+                position: FilePosition {
+                    line: 1,
+                    column: 13,
+                },
+            }],
         },
     );
 }

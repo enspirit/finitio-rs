@@ -120,11 +120,18 @@ impl TypeRef {
             Self::Sub(r) => r.sub_.upgrade().unwrap().borrow().position.clone(),
             Self::Tuple(r) => r.tuple_.upgrade().unwrap().borrow().position.clone(),
             Self::Relation(r) => r.relation_.upgrade().unwrap().borrow().position.clone(),
-            Self::Unresolved { name: _name, position } => position.clone(),
+            Self::Unresolved {
+                name: _name,
+                position,
+            } => position.clone(),
         }
     }
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-        if let Self::Unresolved { name, position: _position } = self {
+        if let Self::Unresolved {
+            name,
+            position: _position,
+        } = self
+        {
             let ftype = type_map.get(name);
             *self = match ftype {
                 Some(udtype) => match udtype {

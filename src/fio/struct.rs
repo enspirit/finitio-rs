@@ -3,11 +3,11 @@ use super::{any, builtin, nil, r#ref};
 #[cfg(test)]
 use crate::fio::common::assert_parse;
 
-use super::{Type, NilType, RefType, SeqType, UnionType};
+use super::{NilType, RefType, SeqType, Type, UnionType};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
-use nom::multi::{separated_list1, separated_list0};
-use nom::sequence::{preceded, terminated, pair};
+use nom::multi::{separated_list0, separated_list1};
+use nom::sequence::{pair, preceded, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 
 use super::common::ws;
@@ -20,20 +20,12 @@ pub struct StructType {
 }
 
 pub fn parse_struct(input: Span) -> IResult<Span, StructType> {
-    let elms = separated_list1(
-        delimited(ws, tag(","), ws),
-        delimited(ws, parse_type, ws)
-    );
+    let elms = separated_list1(delimited(ws, tag(","), ws), delimited(ws, parse_type, ws));
     let parser = delimited(tag("<"), elms, tag(">"));
-    map(
-        parser,
-        |elements| {
-            StructType {
-                elements,
-                position: input.into(),
-            }
-        },
-    )(input)
+    map(parser, |elements| StructType {
+        elements,
+        position: input.into(),
+    })(input)
 }
 
 #[test]
@@ -41,11 +33,9 @@ fn test_parse_struct_simple() {
     assert_parse(
         parse_struct(Span::new("<Nil>")),
         StructType {
-            elements: vec![
-                Type::NilType(NilType {
-                    position: FilePosition { line: 1, column: 2 },
-                }),
-            ],
+            elements: vec![Type::NilType(NilType {
+                position: FilePosition { line: 1, column: 2 },
+            })],
             position: FilePosition { line: 1, column: 1 },
         },
     );
@@ -63,7 +53,7 @@ fn test_parse_struct_duo() {
                 Type::RefType(RefType {
                     name: "Number".to_string(),
                     position: FilePosition { line: 1, column: 7 },
-                })
+                }),
             ],
             position: FilePosition { line: 1, column: 1 },
         },
@@ -83,7 +73,7 @@ fn test_parse_struct_spacing() {
                 Type::RefType(RefType {
                     name: "Number".to_string(),
                     position: FilePosition { line: 2, column: 2 },
-                })
+                }),
             ],
             position: FilePosition { line: 1, column: 1 },
         },
@@ -105,17 +95,19 @@ fn test_parse_struct_complex() {
                         Type::RefType(RefType {
                             name: "Number".to_string(),
                             position: FilePosition { line: 1, column: 9 },
-                        })
+                        }),
                     ],
                     position: FilePosition { line: 1, column: 3 },
                 }),
                 Type::RefType(RefType {
                     name: "String".to_string(),
-                    position: FilePosition { line: 1, column: 17 },
-                })
+                    position: FilePosition {
+                        line: 1,
+                        column: 17,
+                    },
+                }),
             ],
             position: FilePosition { line: 1, column: 1 },
         },
     );
-
 }

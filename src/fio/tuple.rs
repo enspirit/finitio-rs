@@ -1,14 +1,14 @@
-use super::heading::{Heading, parse_heading, Attribute};
+use super::heading::{parse_heading, Attribute, Heading};
 #[cfg(test)]
 use super::{any, builtin, nil, r#ref};
 #[cfg(test)]
 use crate::fio::common::assert_parse;
 
-use super::{Type, NilType, RefType, SeqType, UnionType};
+use super::{NilType, RefType, SeqType, Type, UnionType};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
-use nom::multi::{separated_list1, separated_list0};
-use nom::sequence::{preceded, terminated, pair};
+use nom::multi::{separated_list0, separated_list1};
+use nom::sequence::{pair, preceded, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 
 use super::common::ws;
@@ -21,11 +21,9 @@ pub struct TupleType {
 }
 
 pub fn parse_tuple(input: Span) -> IResult<Span, TupleType> {
-    map(parse_heading, |heading| {
-        TupleType {
-            heading,
-            position: input.into()
-        }
+    map(parse_heading, |heading| TupleType {
+        heading,
+        position: input.into(),
     })(input)
 }
 
@@ -40,24 +38,30 @@ fn test_parse_tuple_simple() {
                         name: "name".to_string(),
                         att_type: Type::RefType(RefType {
                             name: "String".to_string(),
-                            position: FilePosition { line: 1, column: 9 }
+                            position: FilePosition { line: 1, column: 9 },
                         }),
                         optional: false,
-                        position: FilePosition { line: 1, column: 3 }
+                        position: FilePosition { line: 1, column: 3 },
                     },
                     Attribute {
                         name: "age".to_string(),
                         att_type: Type::RefType(RefType {
                             name: "Number".to_string(),
-                            position: FilePosition { line: 1, column: 23 }
+                            position: FilePosition {
+                                line: 1,
+                                column: 23,
+                            },
                         }),
                         optional: true,
-                        position: FilePosition { line: 1, column: 17 }
-                    }
+                        position: FilePosition {
+                            line: 1,
+                            column: 17,
+                        },
+                    },
                 ],
-                position: FilePosition { line: 1, column: 1 }
+                position: FilePosition { line: 1, column: 1 },
             },
-            position: FilePosition { line: 1, column: 1 }
+            position: FilePosition { line: 1, column: 1 },
         },
     );
 }

@@ -13,9 +13,7 @@ pub struct Sub {
 }
 
 #[derive(Clone, Debug)]
-pub struct Constraint {
-
-}
+pub struct Constraint {}
 
 impl Sub {
     pub(crate) fn from_fio(fseq: &fio::SubType) -> Self {

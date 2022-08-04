@@ -28,10 +28,7 @@ pub fn parse_typedef(input: Span) -> IResult<Span, TypeDef> {
     let parser = separated_pair(
         parse_identifier,
         preceded(ws, tag("=")),
-        preceded(
-            ws,
-            parse_type
-        ),
+        preceded(ws, parse_type),
     );
     map(parser, |(name, right)| TypeDef {
         name: String::from(name),

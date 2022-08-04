@@ -13,7 +13,8 @@ pub struct Union {
 
 impl Union {
     pub(crate) fn from_fio(funion: &fio::UnionType) -> Self {
-        let candidates = funion.candidates
+        let candidates = funion
+            .candidates
             .iter()
             .map(|ftype| Type::from_fio(ftype))
             .collect();
