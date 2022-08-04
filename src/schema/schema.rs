@@ -1,6 +1,8 @@
 use crate::{fio, common::FilePosition};
-use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type};
+use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, builtin::Builtin};
 use std::{collections::{btree_map::Entry as BTreeMapEntry, BTreeMap}, rc::Rc, cell::RefCell};
+use super::any::Any;
+use super::nil::Nil;
 use super::seq::Seq;
 use super::set::Set;
 
@@ -33,9 +35,33 @@ impl Schema {
       //
 
       match &typedef.target {
-        fio::Type::AnyType(_) => todo!(),
-        fio::Type::NilType(_) => todo!(),
-        fio::Type::BuiltinType(_) => todo!(),
+        fio::Type::NilType(t) => {
+          ns.add_type(
+            TypeDef::Nil(Rc::new(RefCell::new(Nil::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
+        fio::Type::AnyType(t) => {
+          ns.add_type(
+            TypeDef::Any(Rc::new(RefCell::new(Any::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
+        fio::Type::BuiltinType(t) => {
+          ns.add_type(
+            TypeDef::Builtin(Rc::new(RefCell::new(Builtin::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
         fio::Type::RefType(_) => todo!(),
         fio::Type::SeqType(_) => todo!(),
         fio::Type::SetType(_) => todo!(),

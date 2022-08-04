@@ -13,6 +13,7 @@ mod typedef;
 
 pub use common::Span;
 pub use schema::{parse_schema, Schema};
+pub use any::AnyType;
 pub use nil::NilType;
 pub use builtin::BuiltinType;
 pub use r#ref::RefType;

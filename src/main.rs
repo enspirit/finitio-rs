@@ -11,11 +11,6 @@ const TEST_SCHEMA: &str = r#"
 Null = Nil
 Any = .
 Number = .Number
-Integer = Number
-
-NumberSeq = [Number]
-NumberSet = {Number}
-
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
