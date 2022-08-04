@@ -63,17 +63,6 @@ pub struct SetRef {
 }
 
 impl TypeRef {
-  pub fn name(&self) -> String {
-    match self {
-      Self::Any(t) => t.any_.upgrade().unwrap().borrow().name.clone(),
-      Self::Nil(t) => t.nil_.upgrade().unwrap().borrow().name.clone(),
-      Self::Builtin(t) => t.builtin_.upgrade().unwrap().borrow().name.clone(),
-      Self::Ref(t) => t.ref_.upgrade().unwrap().borrow().name.clone(),
-      Self::Seq(seq) => seq.seq_.upgrade().unwrap().borrow().name.clone(),
-      Self::Set(set) => set.set_.upgrade().unwrap().borrow().name.clone(),
-      Self::Unresolved { name, position } => name.clone(),
-    }
-  }
   pub fn position(&self) -> FilePosition {
     match self {
       Self::Any(r) => r.any_.upgrade().unwrap().borrow().position.clone(),
@@ -92,22 +81,22 @@ impl TypeRef {
         Some(udtype) => {
           match udtype {
             TypeDef::AnyType(any_) => TypeRef::Any(AnyRef {
-              any_: Rc::downgrade(&any_)
+              any_: Rc::downgrade(&any_.target)
             }),
             TypeDef::NilType(nil_) => TypeRef::Nil(NilRef {
-              nil_: Rc::downgrade(&nil_)
+              nil_: Rc::downgrade(&nil_.target)
             }),
             TypeDef::BuiltinType(builtin_) => TypeRef::Builtin(BuiltinRef {
-              builtin_: Rc::downgrade(&builtin_)
+              builtin_: Rc::downgrade(&builtin_.target)
             }),
             TypeDef::RefType(ref_) => TypeRef::Ref(RefRef {
-              ref_: Rc::downgrade(&ref_)
+              ref_: Rc::downgrade(&ref_.target)
             }),
             TypeDef::SeqType(seq_) => TypeRef::Seq(SeqRef {
-              seq_: Rc::downgrade(&seq_)
+              seq_: Rc::downgrade(&seq_.target)
             }),
             TypeDef::SetType(set_) => TypeRef::Set(SetRef {
-              set_: Rc::downgrade(&set_)
+              set_: Rc::downgrade(&set_.target)
             }),
           }
         },

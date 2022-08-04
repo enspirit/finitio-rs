@@ -13,18 +13,16 @@ use super::TypeRef;
 
 #[derive(Clone,Debug)]
 pub struct Ref {
-    pub name: String,
     pub target: Type,
     pub position: FilePosition,
 }
 
 impl Ref {
     pub(crate) fn from_fio(
-        name: String,
         fref: &fio::RefType
     ) -> Self {
         let target = Type::from_fio_ref(fref);
-        Self { name: name, target, position: fref.position.clone() }
+        Self { target, position: fref.position.clone() }
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {

@@ -13,18 +13,16 @@ use super::TypeRef;
 
 #[derive(Clone,Debug)]
 pub struct Set {
-    pub name: String,
     pub elm_type: Type,
     pub position: FilePosition,
 }
 
 impl Set {
     pub(crate) fn from_fio(
-        name: String,
         fset: &fio::SetType
     ) -> Self {
         let elm_type = Type::from_fio(&fset.elm_type);
-        Self { name: name, elm_type: elm_type, position: fset.position.clone() }
+        Self { elm_type: elm_type, position: fset.position.clone() }
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {

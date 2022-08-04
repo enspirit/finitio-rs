@@ -1,5 +1,5 @@
 use crate::{fio, common::FilePosition};
-use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, builtin::Builtin, r#ref::Ref};
+use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, builtin::Builtin, r#ref::Ref, typedef::TypeDefStr};
 use std::{collections::{btree_map::Entry as BTreeMapEntry, BTreeMap}, rc::Rc, cell::RefCell};
 use super::any::Any;
 use super::nil::Nil;
@@ -37,55 +37,79 @@ impl Schema {
       match &typedef.target {
         fio::Type::NilType(t) => {
           ns.add_type(
-            TypeDef::NilType(Rc::new(RefCell::new(Nil::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::NilType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Nil::from_fio(
+                  t
+                )))
+              }
+            ),
             &mut type_map
           )
         },
         fio::Type::AnyType(t) => {
           ns.add_type(
-            TypeDef::AnyType(Rc::new(RefCell::new(Any::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::AnyType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Any::from_fio(
+                  t
+                )))
+              }
+            ),
             &mut type_map
           )
         },
         fio::Type::BuiltinType(t) => {
           ns.add_type(
-            TypeDef::BuiltinType(Rc::new(RefCell::new(Builtin::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::BuiltinType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Builtin::from_fio(
+                  t
+                )))
+              }
+              ),
             &mut type_map
           )
         },
         fio::Type::RefType(t) => {
           ns.add_type(
-            TypeDef::RefType(Rc::new(RefCell::new(Ref::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::RefType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Ref::from_fio(
+                  t
+                )))
+              }
+              ),
             &mut type_map
           )
         },
         fio::Type::SeqType(t) => {
           ns.add_type(
-            TypeDef::SeqType(Rc::new(RefCell::new(Seq::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::SeqType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Seq::from_fio(
+                  t
+                )))
+              }
+              ),
             &mut type_map
           )
         },
         fio::Type::SetType(t) => {
           ns.add_type(
-            TypeDef::SetType(Rc::new(RefCell::new(Set::from_fio(
-              typedef.name.clone(),
-              t
-            )))),
+            TypeDef::SetType(
+              TypeDefStr {
+                name: typedef.name.clone(),
+                target: Rc::new(RefCell::new(Set::from_fio(
+                  t
+                )))
+              }
+              ),
             &mut type_map
           )
         },

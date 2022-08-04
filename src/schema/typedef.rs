@@ -11,34 +11,40 @@ use super::{errors::ValidationError, typemap::TypeMap};
 
 #[derive(Clone, Debug)]
 pub enum TypeDef {
-  AnyType(Rc<RefCell<Any>>),
-  NilType(Rc<RefCell<Nil>>),
-  BuiltinType(Rc<RefCell<Builtin>>),
-  RefType(Rc<RefCell<Ref>>),
-  SeqType(Rc<RefCell<Seq>>),
-  SetType(Rc<RefCell<Set>>),
+  AnyType(TypeDefStr<Any>),
+  NilType(TypeDefStr<Nil>),
+  BuiltinType(TypeDefStr<Builtin>),
+  RefType(TypeDefStr<Ref>),
+  SeqType(TypeDefStr<Seq>),
+  SetType(TypeDefStr<Set>),
+}
+
+#[derive(Clone, Debug)]
+pub struct TypeDefStr<T> {
+  pub name: String,
+  pub target: Rc<RefCell<T>>
 }
 
 impl TypeDef {
   pub fn name(&self) -> String {
     match self {
-        TypeDef::AnyType(t) => t.borrow().name.clone(),
-        TypeDef::NilType(t) => t.borrow().name.clone(),
-        TypeDef::BuiltinType(t) => t.borrow().name.clone(),
-        TypeDef::RefType(t) => t.borrow().name.clone(),
-        TypeDef::SeqType(t) => t.borrow().name.clone(),
-        TypeDef::SetType(t) => t.borrow().name.clone(),
+        TypeDef::AnyType(t) => t.name.clone(),
+        TypeDef::NilType(t) => t.name.clone(),
+        TypeDef::BuiltinType(t) => t.name.clone(),
+        TypeDef::RefType(t) => t.name.clone(),
+        TypeDef::SeqType(t) => t.name.clone(),
+        TypeDef::SetType(t) => t.name.clone(),
     }
   }
 
   pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
     match self {
-        TypeDef::AnyType(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::NilType(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::BuiltinType(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::RefType(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::SeqType(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::SetType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::AnyType(t) => t.target.borrow_mut().resolve(type_map),
+        TypeDef::NilType(t) => t.target.borrow_mut().resolve(type_map),
+        TypeDef::BuiltinType(t) => t.target.borrow_mut().resolve(type_map),
+        TypeDef::RefType(t) => t.target.borrow_mut().resolve(type_map),
+        TypeDef::SeqType(t) => t.target.borrow_mut().resolve(type_map),
+        TypeDef::SetType(t) => t.target.borrow_mut().resolve(type_map),
     }
   }
 
