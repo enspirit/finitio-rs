@@ -7,6 +7,7 @@ use crate::fio;
 use super::any::Any;
 use super::builtin::Builtin;
 use super::nil::Nil;
+use super::r#ref::Ref;
 use super::seq::Seq;
 use super::set::Set;
 use super::typedef::TypeDef;
@@ -25,6 +26,7 @@ pub enum TypeRef {
   Any(AnyRef),
   Nil(NilRef),
   Builtin(BuiltinRef),
+  Ref(RefRef),
   Seq(SeqRef),
   Set(SetRef),
   Unresolved { name: String, position: FilePosition },
@@ -46,6 +48,11 @@ pub struct BuiltinRef {
 }
 
 #[derive(Clone,Debug)]
+pub struct RefRef {
+  pub ref_: Weak<RefCell<Ref>>
+}
+
+#[derive(Clone,Debug)]
 pub struct SeqRef {
   pub seq_: Weak<RefCell<Seq>>
 }
@@ -61,6 +68,7 @@ impl TypeRef {
       Self::Any(t) => t.any_.upgrade().unwrap().borrow().name.clone(),
       Self::Nil(t) => t.nil_.upgrade().unwrap().borrow().name.clone(),
       Self::Builtin(t) => t.builtin_.upgrade().unwrap().borrow().name.clone(),
+      Self::Ref(t) => t.ref_.upgrade().unwrap().borrow().name.clone(),
       Self::Seq(seq) => seq.seq_.upgrade().unwrap().borrow().name.clone(),
       Self::Set(set) => set.set_.upgrade().unwrap().borrow().name.clone(),
       Self::Unresolved { name, position } => name.clone(),
@@ -68,11 +76,12 @@ impl TypeRef {
   }
   pub fn position(&self) -> FilePosition {
     match self {
-      Self::Any(any) => any.any_.upgrade().unwrap().borrow().position.clone(),
-      Self::Nil(nil) => nil.nil_.upgrade().unwrap().borrow().position.clone(),
-      Self::Builtin(nil) => nil.builtin_.upgrade().unwrap().borrow().position.clone(),
-      Self::Seq(seq) => seq.seq_.upgrade().unwrap().borrow().position.clone(),
-      Self::Set(set) => set.set_.upgrade().unwrap().borrow().position.clone(),
+      Self::Any(r) => r.any_.upgrade().unwrap().borrow().position.clone(),
+      Self::Nil(r) => r.nil_.upgrade().unwrap().borrow().position.clone(),
+      Self::Builtin(r) => r.builtin_.upgrade().unwrap().borrow().position.clone(),
+      Self::Ref(r) => r.ref_.upgrade().unwrap().borrow().position.clone(),
+      Self::Seq(r) => r.seq_.upgrade().unwrap().borrow().position.clone(),
+      Self::Set(r) => r.set_.upgrade().unwrap().borrow().position.clone(),
       Self::Unresolved { name, position } => position.clone(),
     }
   }
@@ -90,6 +99,9 @@ impl TypeRef {
             }),
             TypeDef::Builtin(builtin_) => TypeRef::Builtin(BuiltinRef {
               builtin_: Rc::downgrade(&builtin_)
+            }),
+            TypeDef::Ref(ref_) => TypeRef::Ref(RefRef {
+              ref_: Rc::downgrade(&ref_)
             }),
             TypeDef::Seq(seq_) => TypeRef::Seq(SeqRef {
               seq_: Rc::downgrade(&seq_)
@@ -119,7 +131,7 @@ impl Type {
         fio::Type::NilType(t) => Self::Nil(t.position.clone()),
         fio::Type::AnyType(t) => Self::Any(t.position.clone()),
         fio::Type::BuiltinType(t) => Self::Builtin(t.name.clone()),
-        fio::Type::RefType(_) => todo!(),
+        fio::Type::RefType(t) => Self::Ref(TypeRef::Unresolved { name: t.name.clone(), position: t.position.clone() }),
         fio::Type::SeqType(_) => todo!(),
         fio::Type::SetType(_) => todo!(),
         // fio::BaseType::Nil => Self::Nil,
@@ -127,6 +139,15 @@ impl Type {
         // fio::BaseType::Builtin(n) => Self::Builtin(n.name.clone()),
         // fio::BaseType::Ref(n) => Self::Ref(TypeRef::Unresolved { name: n.name.clone(), position: n.position.clone() }),
     }
+  }
+
+  pub fn from_fio_ref(
+    fref: &fio::RefType
+  ) -> Self {
+    Self::Ref(TypeRef::Unresolved {
+      name: fref.name.clone(),
+      position: fref.position.clone()
+    })
   }
 
   pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {

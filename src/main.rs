@@ -11,6 +11,7 @@ const TEST_SCHEMA: &str = r#"
 Null = Nil
 Any = .
 Number = .Number
+Integer = Number
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

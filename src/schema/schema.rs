@@ -1,5 +1,5 @@
 use crate::{fio, common::FilePosition};
-use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, builtin::Builtin};
+use super::{errors::ValidationError, TypeDef, typemap::TypeMap, Type, builtin::Builtin, r#ref::Ref};
 use std::{collections::{btree_map::Entry as BTreeMapEntry, BTreeMap}, rc::Rc, cell::RefCell};
 use super::any::Any;
 use super::nil::Nil;
@@ -62,7 +62,15 @@ impl Schema {
             &mut type_map
           )
         },
-        fio::Type::RefType(_) => todo!(),
+        fio::Type::RefType(t) => {
+          ns.add_type(
+            TypeDef::Ref(Rc::new(RefCell::new(Ref::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
         fio::Type::SeqType(_) => todo!(),
         fio::Type::SetType(_) => todo!(),
         // fio::Type::SeqType(t) => {
