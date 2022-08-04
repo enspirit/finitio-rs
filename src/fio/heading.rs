@@ -56,7 +56,7 @@ fn parse_attribute(input: Span) -> IResult<Span, Attribute> {
 }
 
 
-fn parse_attributes(input: Span) -> IResult<Span, Vec<Attribute>> {
+fn parse_heading(input: Span) -> IResult<Span, Vec<Attribute>> {
   context(
     "fields",
     delimited(
@@ -124,17 +124,17 @@ fn test_parse_attribute_optional() {
 }
 
 #[test]
-fn test_parse_attributes_0() {
+fn test_parse_heading_0() {
     let contents = ["{}", "{ }"];
     for content in contents.iter() {
-        assert_parse(parse_attributes(Span::new(content)), vec![])
+        assert_parse(parse_heading(Span::new(content)), vec![])
     }
 }
 
 #[test]
-fn test_parse_attributes_simple() {
+fn test_parse_heading_simple() {
     assert_parse(
-        parse_attributes(Span::new("{name: String}")),
+        parse_heading(Span::new("{name: String}")),
         vec![
           Attribute {
             name: "name".to_string(),
@@ -150,9 +150,9 @@ fn test_parse_attributes_simple() {
 }
 
 #[test]
-fn test_parse_attributes_duo() {
+fn test_parse_heading_duo() {
     assert_parse(
-        parse_attributes(Span::new("{name: String, age: Number}")),
+        parse_heading(Span::new("{name: String, age: Number}")),
         vec![
           Attribute {
             name: "name".to_string(),
@@ -171,6 +171,37 @@ fn test_parse_attributes_duo() {
             }),
             optional: false,
             position: FilePosition { line: 1, column: 16 }
+          },
+        ],
+    );
+}
+
+#[test]
+fn test_parse_heading_spacing() {
+    let heading = "{
+      name :  String,
+      age  :? Number
+    }";
+    assert_parse(
+        parse_heading(Span::new(heading)),
+        vec![
+          Attribute {
+            name: "name".to_string(),
+            att_type: Type::RefType(RefType {
+              name: "String".to_string(),
+              position: FilePosition { line: 2, column: 15 }
+            }),
+            optional: false,
+            position: FilePosition { line: 2, column: 7 }
+          },
+          Attribute {
+            name: "age".to_string(),
+            att_type: Type::RefType(RefType {
+              name: "Number".to_string(),
+              position: FilePosition { line: 3, column: 15 }
+            }),
+            optional: true,
+            position: FilePosition { line: 3, column: 7 }
           },
         ],
     );
