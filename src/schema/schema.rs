@@ -2,6 +2,7 @@ use super::any::Any;
 use super::nil::Nil;
 use super::seq::Seq;
 use super::set::Set;
+use super::union::Union;
 use super::{
     builtin::Builtin, errors::ValidationError, r#ref::Ref, typedef::TypeDefStr, typemap::TypeMap,
     TypeDef,
@@ -79,6 +80,13 @@ impl Schema {
                     TypeDef::SetType(TypeDefStr {
                         name: typedef.name.clone(),
                         target: Rc::new(RefCell::new(Set::from_fio(t))),
+                    }),
+                    &mut type_map,
+                ),
+                fio::Type::UnionType(t) => ns.add_type(
+                    TypeDef::UnionType(TypeDefStr {
+                        name: typedef.name.clone(),
+                        target: Rc::new(RefCell::new(Union::from_fio(t))),
                     }),
                     &mut type_map,
                 ),

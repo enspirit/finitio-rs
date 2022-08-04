@@ -8,6 +8,7 @@ use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
 
 use crate::fio::Span;
 
+use super::union::{UnionType, parse_union};
 use super::{
     any::{parse_any, AnyType},
     builtin::parse_builtin,
@@ -25,9 +26,24 @@ pub enum Type {
     RefType(RefType),
     SeqType(SeqType),
     SetType(SetType),
+    UnionType(UnionType),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
+    alt((
+        map(preceded(ws, parse_union), Type::UnionType),
+        map(preceded(ws, parse_builtin), Type::BuiltinType),
+        map(preceded(ws, parse_any), Type::AnyType),
+        map(preceded(ws, parse_nil), Type::NilType),
+        map(preceded(ws, parse_ref), Type::RefType),
+        map(preceded(ws, parse_seq), Type::SeqType),
+        map(preceded(ws, parse_set), Type::SetType),
+    ))(input)
+}
+
+// Don't know how to do that without this duplication.
+// The problem is if parse_union uses parse_type which tries to parse a union (stackoverflow)
+pub fn parse_type_but_union(input: Span) -> IResult<Span, Type> {
     alt((
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
@@ -39,7 +55,7 @@ pub fn parse_type(input: Span) -> IResult<Span, Type> {
 }
 
 #[test]
-fn test_parse_type() {
+fn test_parse_type_nil() {
     // Nil (with spaces)
     assert_parse(
         parse_type(Span::new(" Nil")),
@@ -48,6 +64,10 @@ fn test_parse_type() {
         }),
     );
 
+}
+
+#[test]
+fn test_parse_type_ref() {
     // // Ref (with spaces)
     assert_parse(
         parse_type(Span::new(" Number")),
@@ -57,7 +77,11 @@ fn test_parse_type() {
         }),
     );
 
-    // // Seq (with spaces)
+}
+
+#[test]
+fn test_parse_type_seq() {
+// // Seq (with spaces)
     assert_parse(
         parse_type(Span::new(" [ Number ]")),
         Type::SeqType(SeqType {
@@ -68,4 +92,5 @@ fn test_parse_type() {
             })),
         }),
     );
+
 }

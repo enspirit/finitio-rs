@@ -11,6 +11,7 @@ use super::r#ref::Ref;
 use super::seq::Seq;
 use super::set::Set;
 use super::typedef::TypeDef;
+use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
 #[derive(Clone, Debug)]
@@ -21,6 +22,7 @@ pub enum Type {
     Ref(TypeRef),
     Seq(Seq),
     Set(Set),
+    Union(Union),
 }
 
 #[derive(Clone, Debug)]
@@ -31,6 +33,7 @@ pub enum TypeRef {
     Ref(RefRef),
     Seq(SeqRef),
     Set(SetRef),
+    Union(UnionRef),
     Unresolved {
         name: String,
         position: FilePosition,
@@ -66,6 +69,10 @@ pub struct SeqRef {
 pub struct SetRef {
     pub set_: Weak<RefCell<Set>>,
 }
+#[derive(Clone, Debug)]
+pub struct UnionRef {
+    pub union_: Weak<RefCell<Union>>,
+}
 
 impl TypeRef {
     pub fn position(&self) -> FilePosition {
@@ -76,6 +83,7 @@ impl TypeRef {
             Self::Ref(r) => r.ref_.upgrade().unwrap().borrow().position.clone(),
             Self::Seq(r) => r.seq_.upgrade().unwrap().borrow().position.clone(),
             Self::Set(r) => r.set_.upgrade().unwrap().borrow().position.clone(),
+            Self::Union(r) => r.union_.upgrade().unwrap().borrow().position.clone(),
             Self::Unresolved { name: _name, position } => position.clone(),
         }
     }
@@ -102,6 +110,9 @@ impl TypeRef {
                     TypeDef::SetType(set_) => TypeRef::Set(SetRef {
                         set_: Rc::downgrade(&set_.target),
                     }),
+                    TypeDef::UnionType(union_) => TypeRef::Union(UnionRef {
+                        union_: Rc::downgrade(&union_.target),
+                    }),
                 },
                 None => {
                     return Err(ValidationError::NoSuchType {
@@ -127,6 +138,7 @@ impl Type {
             }),
             fio::Type::SeqType(t) => Self::Seq(Seq::from_fio(t)),
             fio::Type::SetType(t) => Self::Set(Set::from_fio(t)),
+            fio::Type::UnionType(t) => Self::Union(Union::from_fio(t)),
         }
     }
 
@@ -144,6 +156,7 @@ impl Type {
             Self::Ref(tref) => tref.resolve(type_map),
             Self::Seq(sref) => sref.resolve(type_map),
             Self::Set(sref) => sref.resolve(type_map),
+            Self::Union(uref) => uref.resolve(type_map),
         }
     }
 }

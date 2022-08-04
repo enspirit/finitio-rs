@@ -6,6 +6,7 @@ mod r#ref;
 mod schema;
 mod seq;
 mod set;
+mod union;
 mod r#type;
 mod typedef;
 mod typemap;

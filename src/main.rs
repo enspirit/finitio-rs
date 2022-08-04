@@ -17,6 +17,8 @@ Seq = [Integer]
 Set = {Integer}
 
 Complex = {{[Set]}}
+
+Union = Number | Integer | Nil
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
