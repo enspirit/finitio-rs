@@ -37,7 +37,7 @@ impl Schema {
       match &typedef.target {
         fio::Type::NilType(t) => {
           ns.add_type(
-            TypeDef::Nil(Rc::new(RefCell::new(Nil::from_fio(
+            TypeDef::NilType(Rc::new(RefCell::new(Nil::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -46,7 +46,7 @@ impl Schema {
         },
         fio::Type::AnyType(t) => {
           ns.add_type(
-            TypeDef::Any(Rc::new(RefCell::new(Any::from_fio(
+            TypeDef::AnyType(Rc::new(RefCell::new(Any::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -55,7 +55,7 @@ impl Schema {
         },
         fio::Type::BuiltinType(t) => {
           ns.add_type(
-            TypeDef::Builtin(Rc::new(RefCell::new(Builtin::from_fio(
+            TypeDef::BuiltinType(Rc::new(RefCell::new(Builtin::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -64,7 +64,7 @@ impl Schema {
         },
         fio::Type::RefType(t) => {
           ns.add_type(
-            TypeDef::Ref(Rc::new(RefCell::new(Ref::from_fio(
+            TypeDef::RefType(Rc::new(RefCell::new(Ref::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -73,7 +73,7 @@ impl Schema {
         },
         fio::Type::SeqType(t) => {
           ns.add_type(
-            TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
+            TypeDef::SeqType(Rc::new(RefCell::new(Seq::from_fio(
               typedef.name.clone(),
               t
             )))),
@@ -82,7 +82,7 @@ impl Schema {
         },
         fio::Type::SetType(t) => {
           ns.add_type(
-            TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
+            TypeDef::SetType(Rc::new(RefCell::new(Set::from_fio(
               typedef.name.clone(),
               t
             )))),

@@ -11,34 +11,34 @@ use super::{errors::ValidationError, typemap::TypeMap};
 
 #[derive(Clone, Debug)]
 pub enum TypeDef {
-  Any(Rc<RefCell<Any>>),
-  Nil(Rc<RefCell<Nil>>),
-  Builtin(Rc<RefCell<Builtin>>),
-  Ref(Rc<RefCell<Ref>>),
-  Seq(Rc<RefCell<Seq>>),
-  Set(Rc<RefCell<Set>>),
+  AnyType(Rc<RefCell<Any>>),
+  NilType(Rc<RefCell<Nil>>),
+  BuiltinType(Rc<RefCell<Builtin>>),
+  RefType(Rc<RefCell<Ref>>),
+  SeqType(Rc<RefCell<Seq>>),
+  SetType(Rc<RefCell<Set>>),
 }
 
 impl TypeDef {
   pub fn name(&self) -> String {
     match self {
-        TypeDef::Any(t) => t.borrow().name.clone(),
-        TypeDef::Nil(t) => t.borrow().name.clone(),
-        TypeDef::Builtin(t) => t.borrow().name.clone(),
-        TypeDef::Ref(t) => t.borrow().name.clone(),
-        TypeDef::Seq(t) => t.borrow().name.clone(),
-        TypeDef::Set(t) => t.borrow().name.clone(),
+        TypeDef::AnyType(t) => t.borrow().name.clone(),
+        TypeDef::NilType(t) => t.borrow().name.clone(),
+        TypeDef::BuiltinType(t) => t.borrow().name.clone(),
+        TypeDef::RefType(t) => t.borrow().name.clone(),
+        TypeDef::SeqType(t) => t.borrow().name.clone(),
+        TypeDef::SetType(t) => t.borrow().name.clone(),
     }
   }
 
   pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
     match self {
-        TypeDef::Any(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::Nil(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::Builtin(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::Ref(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::Seq(t) => t.borrow_mut().resolve(type_map),
-        TypeDef::Set(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::AnyType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::NilType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::BuiltinType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::RefType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::SeqType(t) => t.borrow_mut().resolve(type_map),
+        TypeDef::SetType(t) => t.borrow_mut().resolve(type_map),
     }
   }
 

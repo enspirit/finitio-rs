@@ -91,22 +91,22 @@ impl TypeRef {
       *self = match ftype {
         Some(udtype) => {
           match udtype {
-            TypeDef::Any(any_) => TypeRef::Any(AnyRef {
+            TypeDef::AnyType(any_) => TypeRef::Any(AnyRef {
               any_: Rc::downgrade(&any_)
             }),
-            TypeDef::Nil(nil_) => TypeRef::Nil(NilRef {
+            TypeDef::NilType(nil_) => TypeRef::Nil(NilRef {
               nil_: Rc::downgrade(&nil_)
             }),
-            TypeDef::Builtin(builtin_) => TypeRef::Builtin(BuiltinRef {
+            TypeDef::BuiltinType(builtin_) => TypeRef::Builtin(BuiltinRef {
               builtin_: Rc::downgrade(&builtin_)
             }),
-            TypeDef::Ref(ref_) => TypeRef::Ref(RefRef {
+            TypeDef::RefType(ref_) => TypeRef::Ref(RefRef {
               ref_: Rc::downgrade(&ref_)
             }),
-            TypeDef::Seq(seq_) => TypeRef::Seq(SeqRef {
+            TypeDef::SeqType(seq_) => TypeRef::Seq(SeqRef {
               seq_: Rc::downgrade(&seq_)
             }),
-            TypeDef::Set(set_) => TypeRef::Set(SetRef {
+            TypeDef::SetType(set_) => TypeRef::Set(SetRef {
               set_: Rc::downgrade(&set_)
             }),
           }
