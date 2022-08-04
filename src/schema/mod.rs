@@ -13,6 +13,7 @@ mod r#type;
 mod typedef;
 mod typemap;
 mod tuple;
+mod relation;
 
 pub use r#type::{Type, TypeRef};
 pub use schema::Schema;

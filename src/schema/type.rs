@@ -9,6 +9,7 @@ use super::builtin::Builtin;
 use super::nil::Nil;
 use super::r#ref::Ref;
 use super::r#struct::Struct;
+use super::relation::Relation;
 use super::seq::Seq;
 use super::set::Set;
 use super::sub::Sub;
@@ -29,6 +30,7 @@ pub enum Type {
     Struct(Struct),
     Sub(Sub),
     Tuple(Tuple),
+    Relation(Relation),
 }
 
 #[derive(Clone, Debug)]
@@ -43,6 +45,7 @@ pub enum TypeRef {
     Struct(StructRef),
     Sub(SubRef),
     Tuple(TupleRef),
+    Relation(RelationRef),
     Unresolved {
         name: String,
         position: FilePosition,
@@ -98,6 +101,11 @@ pub struct TupleRef {
     pub tuple_: Weak<RefCell<Tuple>>,
 }
 
+#[derive(Clone, Debug)]
+pub struct RelationRef {
+    pub relation_: Weak<RefCell<Relation>>,
+}
+
 impl TypeRef {
     pub fn position(&self) -> FilePosition {
         match self {
@@ -111,6 +119,7 @@ impl TypeRef {
             Self::Struct(r) => r.struct_.upgrade().unwrap().borrow().position.clone(),
             Self::Sub(r) => r.sub_.upgrade().unwrap().borrow().position.clone(),
             Self::Tuple(r) => r.tuple_.upgrade().unwrap().borrow().position.clone(),
+            Self::Relation(r) => r.relation_.upgrade().unwrap().borrow().position.clone(),
             Self::Unresolved { name: _name, position } => position.clone(),
         }
     }
@@ -149,6 +158,9 @@ impl TypeRef {
                     TypeDef::TupleType(tuple_) => TypeRef::Tuple(TupleRef {
                         tuple_: Rc::downgrade(&tuple_.target),
                     }),
+                    TypeDef::RelationType(relation_) => TypeRef::Relation(RelationRef {
+                        relation_: Rc::downgrade(&relation_.target),
+                    }),
                 },
                 None => {
                     return Err(ValidationError::NoSuchType {
@@ -178,6 +190,7 @@ impl Type {
             fio::Type::StructType(t) => Self::Struct(Struct::from_fio(t)),
             fio::Type::SubType(t) => Self::Sub(Sub::from_fio(t)),
             fio::Type::TupleType(t) => Self::Tuple(Tuple::from_fio(t)),
+            fio::Type::RelationType(t) => Self::Relation(Relation::from_fio(t)),
         }
     }
 
@@ -199,6 +212,7 @@ impl Type {
             Self::Struct(sref) => sref.resolve(type_map),
             Self::Sub(sref) => sref.resolve(type_map),
             Self::Tuple(tref) => tref.resolve(type_map),
+            Self::Relation(rref) => rref.resolve(type_map),
         }
     }
 }

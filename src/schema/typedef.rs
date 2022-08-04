@@ -6,6 +6,7 @@ use super::builtin::Builtin;
 use super::nil::Nil;
 use super::r#ref::Ref;
 use super::r#struct::Struct;
+use super::relation::Relation;
 use super::seq::Seq;
 use super::set::Set;
 use super::sub::Sub;
@@ -25,6 +26,7 @@ pub enum TypeDef {
     StructType(TypeDefStr<Struct>),
     SubType(TypeDefStr<Sub>),
     TupleType(TypeDefStr<Tuple>),
+    RelationType(TypeDefStr<Relation>),
 }
 
 #[derive(Clone, Debug)]
@@ -46,6 +48,7 @@ impl TypeDef {
             TypeDef::StructType(t) => t.name.clone(),
             TypeDef::SubType(t) => t.name.clone(),
             TypeDef::TupleType(t) => t.name.clone(),
+            TypeDef::RelationType(t) => t.name.clone(),
         }
     }
 
@@ -61,6 +64,7 @@ impl TypeDef {
             TypeDef::StructType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::SubType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::TupleType(t) => t.target.borrow_mut().resolve(type_map),
+            TypeDef::RelationType(t) => t.target.borrow_mut().resolve(type_map),
         }
     }
 }

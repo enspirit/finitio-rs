@@ -1,6 +1,7 @@
 use super::any::Any;
 use super::nil::Nil;
 use super::r#struct::Struct;
+use super::relation::Relation;
 use super::seq::Seq;
 use super::set::Set;
 use super::sub::Sub;
@@ -111,6 +112,13 @@ impl Schema {
                     TypeDef::TupleType(TypeDefStr {
                         name: typedef.name.clone(),
                         target: Rc::new(RefCell::new(Tuple::from_fio(t))),
+                    }),
+                    &mut type_map,
+                ),
+                fio::Type::RelationType(t) => ns.add_type(
+                    TypeDef::RelationType(TypeDefStr {
+                        name: typedef.name.clone(),
+                        target: Rc::new(RefCell::new(Relation::from_fio(t))),
                     }),
                     &mut type_map,
                 ),

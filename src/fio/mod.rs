@@ -13,6 +13,7 @@ mod r#struct;
 mod sub;
 mod heading;
 mod tuple;
+mod relation;
 mod r#type;
 mod typedef;
 
@@ -29,3 +30,4 @@ pub use union::UnionType;
 pub use r#struct::StructType;
 pub use sub::SubType;
 pub use tuple::TupleType;
+pub use relation::RelationType;

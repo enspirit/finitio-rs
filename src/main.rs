@@ -29,6 +29,8 @@ Tuple = {
     name          :   String,
     optional_age  :?  Number
 }
+
+Relation = {{ name: String, age: Number }}
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

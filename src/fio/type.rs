@@ -10,6 +10,7 @@ use crate::fio::Span;
 
 use super::SubType;
 use super::r#struct::{StructType, parse_struct};
+use super::relation::RelationType;
 use super::sub::parse_sub;
 use super::tuple::{TupleType, parse_tuple};
 use super::union::{UnionType, parse_union};
@@ -34,6 +35,7 @@ pub enum Type {
     StructType(StructType),
     SubType(SubType),
     TupleType(TupleType),
+    RelationType(RelationType),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
