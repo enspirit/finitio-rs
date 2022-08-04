@@ -71,26 +71,24 @@ impl Schema {
             &mut type_map
           )
         },
-        fio::Type::SeqType(_) => todo!(),
-        fio::Type::SetType(_) => todo!(),
-        // fio::Type::SeqType(t) => {
-        //   ns.add_type(
-        //     TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
-        //       typedef.name.clone(),
-        //       t
-        //     )))),
-        //     &mut type_map
-        //   )
-        // },
-        // fio::Type::SetType(t) => {
-        //   ns.add_type(
-        //     TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
-        //       typedef.name.clone(),
-        //       t
-        //     )))),
-        //     &mut type_map
-        //   )
-        // },
+        fio::Type::SeqType(t) => {
+          ns.add_type(
+            TypeDef::Seq(Rc::new(RefCell::new(Seq::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
+        fio::Type::SetType(t) => {
+          ns.add_type(
+            TypeDef::Set(Rc::new(RefCell::new(Set::from_fio(
+              typedef.name.clone(),
+              t
+            )))),
+            &mut type_map
+          )
+        },
       }
     }
     ns.resolve(&type_map)?;

@@ -12,6 +12,9 @@ Null = Nil
 Any = .
 Number = .Number
 Integer = Number
+
+Seq = [Integer]
+Set = {Integer}
 "#;
 
 fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {

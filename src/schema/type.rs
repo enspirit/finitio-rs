@@ -134,10 +134,6 @@ impl Type {
         fio::Type::RefType(t) => Self::Ref(TypeRef::Unresolved { name: t.name.clone(), position: t.position.clone() }),
         fio::Type::SeqType(_) => todo!(),
         fio::Type::SetType(_) => todo!(),
-        // fio::BaseType::Nil => Self::Nil,
-        // fio::BaseType::Any => Self::Any,
-        // fio::BaseType::Builtin(n) => Self::Builtin(n.name.clone()),
-        // fio::BaseType::Ref(n) => Self::Ref(TypeRef::Unresolved { name: n.name.clone(), position: n.position.clone() }),
     }
   }
 
