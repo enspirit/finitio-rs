@@ -11,6 +11,7 @@ mod set;
 mod union;
 mod r#struct;
 mod sub;
+mod heading;
 mod r#type;
 mod typedef;
 
