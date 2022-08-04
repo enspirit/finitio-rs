@@ -1,6 +1,7 @@
 #[cfg(test)]
 use crate::{
     common::FilePosition,
+    fio::{any, builtin, r#ref, Type},
 };
 
 use nom::{
@@ -11,12 +12,13 @@ use nom::{
     IResult,
 };
 
-use crate::fio::{common::Span, Type, builtin, any, r#ref};
+use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
 
 use super::{
     common::{ws, ws1},
-    import::{parse_import, Import}, typedef::{parse_typedef, TypeDef},
+    import::{parse_import, Import},
+    typedef::{parse_typedef, TypeDef},
 };
 
 #[derive(Debug, PartialEq)]
@@ -44,10 +46,7 @@ pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
                     SchemaPart::TypeDef(part) => type_defs.push(part),
                 }
             }
-            Ok(Schema {
-                imports,
-                type_defs,
-            })
+            Ok(Schema { imports, type_defs })
         }
         Ok((garbage, _)) => Err(ParseError::TrailingGarbage(garbage)),
         Err(error) => Err(ParseError::Nom(error)),
@@ -79,10 +78,7 @@ Integer = Number
         Ok(Schema {
             imports: vec![Import {
                 filename: "finitio/data".to_string(),
-                position: FilePosition {
-                    line: 2,
-                    column: 9
-                },
+                position: FilePosition { line: 2, column: 9 },
             }],
             type_defs: vec![
                 TypeDef {
@@ -90,7 +86,10 @@ Integer = Number
                     position: FilePosition { line: 4, column: 1 },
                     target: Type::BuiltinType(builtin::BuiltinType {
                         name: String::from("Number"),
-                        position: FilePosition { line: 4, column: 10 }
+                        position: FilePosition {
+                            line: 4,
+                            column: 10
+                        }
                     })
                 },
                 TypeDef {
@@ -105,7 +104,10 @@ Integer = Number
                     position: FilePosition { line: 6, column: 1 },
                     target: Type::RefType(r#ref::RefType {
                         name: String::from("Number"),
-                        position: FilePosition { line: 6, column: 11 }
+                        position: FilePosition {
+                            line: 6,
+                            column: 11
+                        }
                     })
                 },
             ]

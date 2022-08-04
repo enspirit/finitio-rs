@@ -1,16 +1,15 @@
-
-mod errors;
 mod any;
-mod nil;
 mod builtin;
+mod errors;
+mod nil;
 mod r#ref;
-mod r#type;
-mod typemap;
+mod schema;
 mod seq;
 mod set;
-mod schema;
+mod r#type;
 mod typedef;
+mod typemap;
 
 pub use r#type::{Type, TypeRef};
-pub use typedef::{TypeDef};
 pub use schema::Schema;
+pub use typedef::TypeDef;

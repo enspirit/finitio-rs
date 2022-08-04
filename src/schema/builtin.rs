@@ -4,19 +4,17 @@ use crate::fio;
 use super::errors::ValidationError;
 use super::typemap::TypeMap;
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Builtin {
     pub target: String,
     pub position: FilePosition,
 }
 
 impl Builtin {
-    pub(crate) fn from_fio(
-        fbuiltin: &fio::BuiltinType
-    ) -> Self {
+    pub(crate) fn from_fio(fbuiltin: &fio::BuiltinType) -> Self {
         Self {
             target: fbuiltin.name.clone(),
-            position: fbuiltin.position.clone()
+            position: fbuiltin.position.clone(),
         }
     }
 

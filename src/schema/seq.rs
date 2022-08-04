@@ -1,30 +1,22 @@
-
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
 use crate::common::FilePosition;
 use crate::fio;
 
 use super::errors::ValidationError;
 use super::r#type::Type;
 use super::typemap::TypeMap;
-use super::TypeRef;
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Seq {
     pub elm_type: Box<Type>,
     pub position: FilePosition,
 }
 
 impl Seq {
-    pub(crate) fn from_fio(
-        fseq: &fio::SeqType
-    ) -> Self {
+    pub(crate) fn from_fio(fseq: &fio::SeqType) -> Self {
         let elm_type = Type::from_fio(&fseq.elm_type);
         Self {
             elm_type: Box::new(elm_type),
-            position: fseq.position.clone()
+            position: fseq.position.clone(),
         }
     }
 

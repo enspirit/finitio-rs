@@ -1,26 +1,19 @@
-use std::fs::File;
-
 #[cfg(test)]
-use crate::fio::{
-    common::assert_parse,
-};
+use crate::{common::FilePosition, fio::common::assert_parse};
 
-use crate::{fio::common::{parse_identifier, Span}, common::FilePosition};
 use crate::fio::seq::{parse_seq, SeqType};
 use crate::fio::set::{parse_set, SetType};
 
-use nom::{
-    bytes::complete::tag,
-    combinator::{map},
-    sequence::{preceded, separated_pair},
-    IResult, branch::alt,
-};
+use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
+
+use crate::fio::Span;
 
 use super::{
+    any::{parse_any, AnyType},
+    builtin::parse_builtin,
+    builtin::BuiltinType,
     common::ws,
     nil::{parse_nil, NilType},
-    any::{parse_any, AnyType},
-    builtin::parse_builtin, builtin::BuiltinType,
     r#ref::{parse_ref, RefType},
 };
 
@@ -42,8 +35,7 @@ pub fn parse_type(input: Span) -> IResult<Span, Type> {
         map(preceded(ws, parse_ref), Type::RefType),
         map(preceded(ws, parse_seq), Type::SeqType),
         map(preceded(ws, parse_set), Type::SetType),
-    ))
-    (input)
+    ))(input)
 }
 
 #[test]
@@ -51,9 +43,9 @@ fn test_parse_type() {
     // Nil (with spaces)
     assert_parse(
         parse_type(Span::new(" Nil")),
-        Type::NilType(NilType{
-            position: FilePosition { line: 1, column: 2 }
-        })
+        Type::NilType(NilType {
+            position: FilePosition { line: 1, column: 2 },
+        }),
     );
 
     // // Ref (with spaces)
@@ -61,8 +53,8 @@ fn test_parse_type() {
         parse_type(Span::new(" Number")),
         Type::RefType(RefType {
             name: String::from("Number"),
-            position: FilePosition { line: 1, column: 2 }
-        })
+            position: FilePosition { line: 1, column: 2 },
+        }),
     );
 
     // // Seq (with spaces)
@@ -72,8 +64,8 @@ fn test_parse_type() {
             position: FilePosition { line: 1, column: 2 },
             elm_type: Box::new(Type::RefType(RefType {
                 name: String::from("Number"),
-                position: FilePosition { line: 1, column: 4 }
-            }))
-        })
+                position: FilePosition { line: 1, column: 4 },
+            })),
+        }),
     );
 }

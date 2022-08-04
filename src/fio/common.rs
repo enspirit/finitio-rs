@@ -1,9 +1,8 @@
 use nom::{
     bytes::complete::{take_while, take_while1},
     character::complete::char,
-    combinator::{cut, map, opt},
-    multi::separated_list0,
-    sequence::{pair, preceded, terminated},
+    combinator::{map, opt},
+    sequence::{pair, preceded},
     IResult,
 };
 use nom_locate::LocatedSpan;

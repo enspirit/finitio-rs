@@ -1,31 +1,23 @@
 #[cfg(test)]
 use crate::fio::common::assert_parse;
 
-use crate::{fio::common::{parse_identifier, Span}, common::FilePosition};
-use nom::{
-    bytes::complete::tag,
-    combinator::{map},
-    sequence::{preceded},
-    IResult,
+use crate::{
+    common::FilePosition,
+    fio::common::{parse_identifier, Span},
 };
+use nom::{bytes::complete::tag, combinator::map, sequence::preceded, IResult};
 
 #[derive(Debug, PartialEq)]
 pub struct BuiltinType {
     pub name: String,
-    pub position: FilePosition
+    pub position: FilePosition,
 }
 
 pub fn parse_builtin(input: Span) -> IResult<Span, BuiltinType> {
-    map(
-        preceded(
-            tag("."),
-            parse_identifier), |name| {
-            BuiltinType {
-                name: String::from(name),
-                position: input.into()
-            }
-        }
-    )(input)
+    map(preceded(tag("."), parse_identifier), |name| BuiltinType {
+        name: String::from(name),
+        position: input.into(),
+    })(input)
 }
 
 #[test]
@@ -34,7 +26,7 @@ fn test_parse_builtin() {
         parse_builtin(Span::new(".Number")),
         BuiltinType {
             name: String::from("Number"),
-            position: FilePosition { line: 1, column: 1 }
+            position: FilePosition { line: 1, column: 1 },
         },
     );
 }
