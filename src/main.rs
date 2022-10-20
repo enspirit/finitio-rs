@@ -1,5 +1,6 @@
 use finitio::fio;
 use finitio::schema;
+use finitio::js;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     cmd_parse()
@@ -47,7 +48,8 @@ fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
 
     for fio in fios.iter() {
         let res = schema::Schema::from_fio(fio)?;
-        println!("{:?}", res);
+        // println!("{:?}", res);
+        js::Schema::from_schema(&res);
     }
 
     Ok(())

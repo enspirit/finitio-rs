@@ -24,6 +24,7 @@ pub struct Schema {
 }
 
 impl Schema {
+
     pub fn from_fio(fschema: &fio::Schema) -> Result<Self, ValidationError> {
         let mut ns = Self::default();
         let mut type_map = TypeMap::new();
