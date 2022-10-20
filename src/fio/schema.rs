@@ -11,6 +11,7 @@ use nom::{
     sequence::{preceded, terminated},
     IResult,
 };
+use serde::{Serialize, Deserialize};
 
 use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
@@ -21,7 +22,7 @@ use super::{
     typedef::{parse_typedef, TypeDef},
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Schema {
     pub imports: Vec<Import>,
     pub type_defs: Vec<TypeDef>,

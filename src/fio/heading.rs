@@ -7,6 +7,7 @@ use nom::{
     sequence::{delimited, pair, preceded, separated_pair, terminated},
     IResult,
 };
+use serde::{Serialize, Deserialize};
 
 use crate::common::FilePosition;
 use crate::fio::common::{parse_identifier, trailing_comma, ws, ws1, Span};
@@ -19,13 +20,13 @@ use nom::Slice;
 
 use super::RefType;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Heading {
     pub attributes: Vec<Attribute>,
     pub position: FilePosition,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Attribute {
     pub name: String,
     pub att_type: Type,

@@ -7,11 +7,12 @@ use super::Type;
 use crate::common::FilePosition;
 use crate::fio::common::Span;
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
+use serde::{Serialize, Deserialize};
 
 use super::common::ws;
 use super::r#type::parse_type;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SeqType {
     pub elm_type: Box<Type>,
     pub position: FilePosition,

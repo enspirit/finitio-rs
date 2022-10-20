@@ -3,10 +3,11 @@ use crate::fio::common::assert_parse;
 
 use crate::{common::FilePosition, fio::common::Span};
 use nom::{bytes::complete::tag, combinator::map, sequence::preceded, IResult};
+use serde::{Serialize, Deserialize};
 
 use super::common::ws;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct NilType {
     pub position: FilePosition,
 }

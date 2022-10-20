@@ -5,6 +5,7 @@ use crate::fio::seq::{parse_seq, SeqType};
 use crate::fio::set::{parse_set, SetType};
 
 use nom::{branch::alt, combinator::map, sequence::preceded, IResult};
+use serde::{Serialize, Deserialize};
 
 use crate::fio::Span;
 
@@ -23,7 +24,7 @@ use super::{
     r#ref::{parse_ref, RefType},
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum Type {
     AnyType(AnyType),
     NilType(NilType),

@@ -15,9 +15,10 @@ use nom::{
     sequence::{preceded, separated_pair},
     IResult,
 };
+use serde::{Serialize, Deserialize};
 
 use super::common::ws;
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TypeDef {
     pub name: String,
     pub target: Type,

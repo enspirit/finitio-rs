@@ -6,8 +6,9 @@ use crate::{
     fio::common::{parse_identifier, Span},
 };
 use nom::{combinator::map, IResult};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct RefType {
     pub name: String,
     pub position: FilePosition,
