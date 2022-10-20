@@ -1,0 +1,287 @@
+{
+  "types": [
+    {
+      "name": "Null",
+      "type": {
+        "ref": {
+          "typeName": "Nil"
+        }
+      }
+    },
+    {
+      "name": "Any",
+      "type": {
+        "any": {}
+      }
+    },
+    {
+      "name": "Number",
+      "type": {
+        "builtin": {
+          "jsType": "Number"
+        }
+      }
+    },
+    {
+      "name": "Integer",
+      "type": {
+        "ref": {
+          "typeName": "Number"
+        }
+      }
+    },
+    {
+      "name": "String",
+      "type": {
+        "builtin": {
+          "jsType": "String"
+        }
+      }
+    },
+    {
+      "name": "Seq",
+      "type": {
+        "seq": {
+          "elmType": {
+            "ref": {
+              "typeName": "Integer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Set",
+      "type": {
+        "set": {
+          "elmType": {
+            "ref": {
+              "typeName": "Integer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Complex",
+      "type": {
+        "set": {
+          "elmType": {
+            "set": {
+              "elmType": {
+                "seq": {
+                  "elmType": {
+                    "ref": {
+                      "typeName": "Set"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Union",
+      "type": {
+        "union": {
+          "candidates": [
+            {
+              "ref": {
+                "typeName": "Number"
+              }
+            },
+            {
+              "ref": {
+                "typeName": "Integer"
+              }
+            },
+            {
+              "ref": {
+                "typeName": "Nil"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Struct",
+      "type": {
+        "struct": {
+          "componentTypes": [
+            {
+              "union": {
+                "candidates": [
+                  {
+                    "ref": {
+                      "typeName": "Number"
+                    }
+                  },
+                  {
+                    "ref": {
+                      "typeName": "Integer"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "ref": {
+                "typeName": "Nil"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "PosInteger",
+      "type": {
+        "sub": {
+          "superType": {
+            "ref": {
+              "typeName": "Integer"
+            }
+          },
+          "constraints": [
+            {
+              "native": [
+                "i",
+                "i > 0"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Tuple",
+      "type": {
+        "tuple": {
+          "heading": {
+            "attributes": [
+              {
+                "name": "name",
+                "type": {
+                  "ref": {
+                    "typeName": "String"
+                  }
+                }
+              },
+              {
+                "name": "optional_age",
+                "type": {
+                  "ref": {
+                    "typeName": "Number"
+                  }
+                },
+                "required": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Relation",
+      "type": {
+        "relation": {
+          "heading": {
+            "attributes": [
+              {
+                "name": "name",
+                "type": {
+                  "ref": {
+                    "typeName": "String"
+                  }
+                }
+              },
+              {
+                "name": "age",
+                "type": {
+                  "ref": {
+                    "typeName": "Number"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Password",
+      "type": {
+        "sub": {
+          "superType": {
+            "ref": {
+              "typeName": "String"
+            }
+          },
+          "constraints": [
+            {
+              "native": [
+                "s",
+                "s.length >= 8"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "User",
+      "type": {
+        "sub": {
+          "superType": {
+            "tuple": {
+              "heading": {
+                "attributes": [
+                  {
+                    "name": "name",
+                    "type": {
+                      "ref": {
+                        "typeName": "String"
+                      }
+                    }
+                  },
+                  {
+                    "name": "password",
+                    "type": {
+                      "ref": {
+                        "typeName": "Password"
+                      }
+                    }
+                  },
+                  {
+                    "name": "confirm",
+                    "type": {
+                      "ref": {
+                        "typeName": "Password"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "constraints": [
+            {
+              "native": [
+                "t",
+                "t.password == t.confirm"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "imports": [
+    {
+      "from": "finitio/data"
+    }
+  ]
+}
