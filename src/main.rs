@@ -2,55 +2,52 @@ use finitio::fio;
 use finitio::schema;
 use finitio::js;
 
+use std::fs;
+use clap::{Parser, Subcommand};
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+#[command(propagate_version = true)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Parse {
+        #[arg(short, long)]
+        filename: String,
+    },
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    cmd_parse()
-}
+    let cli = Cli::parse();
 
-const TEST_SCHEMA: &str = r#"
-@import finitio/data
+    // You can check for the existence of subcommands, and if found use their
+    // matches just as you would the top level cmd
+    match &cli.command {
+        Commands::Parse { filename } => {
+            // Parse FIO file
+            let contents = fs::read_to_string(filename)
+                .expect("Should have been able to read the file");
 
-Null = Nil
-Any = .
-Number = .Number
-Integer = Number
-String = .String
+            let res = fio::parse_schema(&contents[..])
+                .map_err(|e| format!("{}", e));
 
-Seq = [Integer]
-Set = {Integer}
+            let adt = match res {
+                Ok(adt) => {
+                    println!("Syntax is valid!");
+                    adt
+                },
+                Err(err) => panic!("Syntax error: {}", err),
+            };
 
-Complex = {{[Set]}}
-
-Union = Number | Integer | Nil
-
-Struct = <Number | Integer, Nil>
-
-PosInteger = Integer(i | i > 0)
-
-Tuple = {
-    name          :   String,
-    optional_age  :?  Number
-}
-Relation = {{ name: String, age: Number }}
-
-Password = String( s | s.length >= 8 )
-User = {
-    name: String,
-    password: Password,
-    confirm: Password
-}( t | t.password == t.confirm )
-"#;
-
-fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
-    // Parse FIO file
-    let mut fios: Vec<fio::Schema> = Vec::new();
-    let fio = fio::parse_schema(TEST_SCHEMA).map_err(|e| format!("{}", e))?;
-    fios.push(fio);
-
-    for fio in fios.iter() {
-        let res = schema::Schema::from_fio(fio)?;
-        // println!("{:?}", res);
-        js::generate_json(fio);
+            let res = schema::Schema::from_fio(&adt);
+            match res {
+                Ok(_) => println!("Your schema is valid!"),
+                Err(err) => panic!("Your schema is invalid: {}", err),
+            }
+            Ok(())
+        },
     }
-
-    Ok(())
 }
