@@ -31,18 +31,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let contents = fs::read_to_string(filename)
                 .expect("Should have been able to read the file");
 
-            let res = fio::parse_schema(&contents[..])
-                .map_err(|e| format!("{}", e));
+            let mut fios: Vec<fio::Schema> = Vec::new();
+            let main_fio = fio::parse_schema(&contents[..]).expect("Syntax error");
+            fios.push(main_fio);
 
-            let adt = match res {
-                Ok(adt) => {
-                    println!("Syntax is valid!");
-                    adt
-                },
-                Err(err) => panic!("Syntax error: {}", err),
-            };
-
-            let res = schema::Schema::from_fio(&adt);
+            let res = schema::Schema::from_fio(fios.iter());
             match res {
                 Ok(_) => println!("Your schema is valid!"),
                 Err(err) => panic!("Your schema is invalid: {}", err),
