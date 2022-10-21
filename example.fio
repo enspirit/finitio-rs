@@ -1,14 +1,4 @@
-@import finitio/data
-
-Null = Nil
-
-Any = .
-
-Number = .Number
-
-Integer = Number
-
-String = .String
+@import scalars.fio
 
 Seq = [Integer]
 

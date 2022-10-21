@@ -1,0 +1,10 @@
+Null = Nil
+
+Any = .
+
+Number = .Number
+
+Integer = Number
+
+String = .String
+
