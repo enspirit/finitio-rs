@@ -4,6 +4,7 @@ use nom::{
     sequence::{preceded, terminated},
     IResult,
 };
+use serde::{Serialize, Deserialize};
 
 use crate::common::FilePosition;
 
@@ -12,7 +13,7 @@ use super::{
     Span,
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Import {
     pub filename: String,
     pub position: FilePosition,

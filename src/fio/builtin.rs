@@ -6,8 +6,9 @@ use crate::{
     fio::common::{parse_identifier, Span},
 };
 use nom::{bytes::complete::tag, combinator::map, sequence::preceded, IResult};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct BuiltinType {
     pub name: String,
     pub position: FilePosition,

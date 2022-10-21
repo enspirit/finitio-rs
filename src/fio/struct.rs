@@ -9,11 +9,12 @@ use crate::fio::common::Span;
 use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{pair, preceded, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
+use serde::{Serialize, Deserialize};
 
 use super::common::ws;
 use super::r#type::{parse_type, parse_type_but_union};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct StructType {
     pub elements: Vec<Type>,
     pub position: FilePosition,

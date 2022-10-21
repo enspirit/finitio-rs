@@ -49,7 +49,7 @@ fn cmd_parse() -> Result<(), Box<dyn std::error::Error>> {
     for fio in fios.iter() {
         let res = schema::Schema::from_fio(fio)?;
         // println!("{:?}", res);
-        js::Schema::from_schema(&res);
+        js::generate_json(fio);
     }
 
     Ok(())

@@ -1,3 +1,3 @@
 mod schema;
 
-pub use schema::Schema;
+pub use schema::generate_json;

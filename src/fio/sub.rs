@@ -24,18 +24,19 @@ use nom::combinator::{map_parser, not, peek, recognize, rest};
 use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{pair, preceded, separated_pair, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
+use serde::{Serialize, Deserialize};
 
 use super::common::{parse_identifier, take_until_unbalanced, ws};
 use super::r#type::{parse_type, parse_type_but_union};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Constraint {
     pub param: String,
     pub expr: String,
     pub position: FilePosition,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SubType {
     pub base: Box<Type>,
     pub constraints: Vec<Constraint>,

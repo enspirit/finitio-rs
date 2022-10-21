@@ -4,11 +4,12 @@ use crate::{fio::any, fio::builtin, fio::common::assert_parse, fio::nil, fio::r#
 
 use crate::fio::common::Span;
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
+use serde::{Serialize, Deserialize};
 
 use super::Type;
 use super::{common::ws, r#type::parse_type};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SetType {
     pub elm_type: Box<Type>,
     pub position: FilePosition,
