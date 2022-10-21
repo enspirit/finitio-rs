@@ -36,7 +36,8 @@ impl Schema {
                 match names.entry(typedef.name.to_owned()) {
                     BTreeMapEntry::Occupied(entry) => {
                         return Err(ValidationError::DuplicateIdentifier {
-                            position: entry.get().clone(),
+                            first_seen: entry.get().clone(),
+                            position: typedef.position.clone(),
                             identifier: typedef.name.to_owned(),
                         })
                     }

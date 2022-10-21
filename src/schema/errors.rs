@@ -6,6 +6,7 @@ use crate::common::FilePosition;
 #[derive(Debug)]
 pub enum ValidationError {
     DuplicateIdentifier {
+        first_seen: FilePosition,
         position: FilePosition,
         identifier: String,
     },
