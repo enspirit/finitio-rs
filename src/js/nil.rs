@@ -1,10 +1,12 @@
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, nil::Nil};
 
 impl TypeInclude<serde_json::Value> for Nil {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
-            serde_json::Value::Null => Ok(true),
-            _ => Err("not a null value")
+            serde_json::Value::Null => Ok(()),
+            v => whatever!("not a null value: {}", v)
         }
     }
 }

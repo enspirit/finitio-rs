@@ -1,9 +1,11 @@
 use std::io::Error;
 
+use snafu::Whatever;
+
 use crate::schema::{TypeInclude, Type, TypeDef};
 
 impl TypeInclude<serde_json::Value> for Type {
-  fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+  fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
           Type::Any(t) => t.include(v),
           Type::Nil(t) => t.include(v),
@@ -21,7 +23,7 @@ impl TypeInclude<serde_json::Value> for Type {
 }
 
 impl TypeInclude<serde_json::Value> for TypeDef {
-  fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+  fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
         TypeDef::AnyType(t) => t.target.borrow_mut().include(v),
         TypeDef::NilType(t) => t.target.borrow_mut().include(v),

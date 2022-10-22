@@ -1,9 +1,11 @@
 use std::{cell::RefCell, rc::Rc};
 
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, union::Union};
 
 impl TypeInclude<serde_json::Value> for Union {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         let found = self.candidates.iter().find(|x| {
             match x.include(v) {
                 Ok(_) => true,
@@ -11,8 +13,8 @@ impl TypeInclude<serde_json::Value> for Union {
             }
         });
         match found {
-            Some(t) => Ok(true),
-            None => Err("Could not find any candidate including value"),
+            Some(t) => Ok(()),
+            None => whatever!("Value rejected by all types of the Union: {}", v),
         }
     }
 }

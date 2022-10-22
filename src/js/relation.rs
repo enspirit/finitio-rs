@@ -1,22 +1,25 @@
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, relation::{Relation}, heading::{Heading, Attribute}};
 
 impl TypeInclude<serde_json::Value> for Relation {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(arr) => {
-                let invalid = arr.iter().filter(|row| {
+                let invalid = arr.iter().fold(Vec::new(), |mut errors, row| {
                     match self.heading.include(row) {
-                        Ok(_) => false,
-                        Err(_) => true
+                        Ok(_) => {},
+                        Err(err) => errors.push(err)
                     }
+                    errors
                 });
-                if invalid.peekable().peek().is_some() {
-                    Err("Some rows are invalid")
+                if invalid.is_empty() {
+                    Ok(())
                 } else {
-                    Ok(true)
+                    whatever!("Array contains invalid rows: {}", invalid[0])
                 }
             },
-            _ => Err("Invalid source type")
+            v => whatever!("Invalid value for Relation: {}", v)
         }
     }
 }

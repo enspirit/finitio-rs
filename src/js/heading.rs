@@ -1,40 +1,55 @@
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, tuple::{Tuple}, heading::{Heading, Attribute}};
 
 impl TypeInclude<serde_json::Value> for Heading {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Object(obj) => {
                 // check for extra props
-                let extras = obj.keys().filter(|prop| !self.attributes.contains_key(*prop));
-                if extras.peekable().peek().is_some() {
-                    return Err("The tuple has extra properties")
+                let extras: Vec<String> = obj
+                    .keys()
+                    .filter(|prop| !self.attributes.contains_key(*prop))
+                    .map(|s| String::from(s))
+                    .collect();
+
+                if extras.len() > 0 {
+                    whatever!("The objet has extra properties: {}", extras.join(","))
                 }
 
                 // check for missing props
-                let missing = self.attributes.values().filter(|prop| {
-                    !prop.optional && !obj.contains_key(&prop.name)
-                });
-                if missing.peekable().peek().is_some() {
-                    return Err("The tuple is missing properties")
+                let missing: Vec<String> = self.attributes
+                    .values()
+                    .filter(|prop| {
+                        !prop.optional && !obj.contains_key(&prop.name)
+                    })
+                    .map(|a| {
+                        a.name.clone()
+                    })
+                    .collect();
+
+                if missing.len() > 0 {
+                    whatever!("The objet is missing properties: {}", missing.join(","))
                 }
 
                 // validate all properties
-                let invalid = obj.iter().filter(|(name, value)| {
-                    let att = self.attributes.get(*name).unwrap();
+                let errors = obj.iter().fold(Vec::new(), |mut errors, (name, value)| {
+                    let att = self.attributes.get(name).unwrap();
                     let is_valid = att.att_type.include(value);
                     match is_valid {
-                        Ok(_) => false,
-                        Err(_) => true,
+                        Ok(_) => (),
+                        Err(e) => errors.push(e),
                     }
+                    errors
                 });
 
-                if invalid.peekable().peek().is_some() {
-                    Err("Some properties have invalid values")
+                if errors.is_empty() {
+                    Ok(())
                 } else {
-                    Ok(true)
+                    whatever!("Object does not match heading: {}", v)
                 }
             },
-            _ => Err("Invalid source type")
+            v => whatever!("Value not compatible with heading: {}", v)
         }
     }
 }

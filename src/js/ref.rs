@@ -1,13 +1,15 @@
+use snafu::Whatever;
+
 use crate::schema::{TypeInclude, r#ref::Ref, TypeRef, builtin::Builtin};
 
 impl TypeInclude<serde_json::Value> for Ref {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.target.include(v)
     }
 }
 
 impl TypeInclude<serde_json::Value> for TypeRef {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self {
             TypeRef::Any(t) => {
                 t.any_.upgrade().unwrap().borrow_mut().include(v)

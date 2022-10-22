@@ -2,6 +2,7 @@ use finitio::fio;
 use finitio::schema;
 use finitio::schema::Schema;
 use finitio::schema::errors::ValidationError;
+use snafu::ErrorCompat;
 use std::borrow::Borrow;
 use std::collections::HashSet;
 use std::error::Error;
@@ -62,7 +63,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             match target {
                 Some(t) => {
                     let t = t.to_owned();
-                    schema::TypeInclude::include(&t, &data).unwrap();
+                    match schema::TypeInclude::include(&t, &data) {
+                        Ok(_) => println!("Valid data!"),
+                        Err(e) => {
+                            eprintln!("{}", e);
+                        }
+                    }
                 },
                 None => panic!("Could not find the targetted type"),
             }

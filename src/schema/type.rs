@@ -2,6 +2,8 @@ use std::io::Error;
 use std::rc::Rc;
 use std::{cell::RefCell, rc::Weak};
 
+use snafu::Whatever;
+
 use crate::common::FilePosition;
 use crate::fio;
 
@@ -20,7 +22,7 @@ use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
 pub trait TypeInclude<T> {
-    fn include(&self, _: &T) -> Result<bool, &'static str>;
+    fn include(&self, _: &T) -> Result<(), Whatever>;
 }
 
 #[derive(Clone, Debug)]

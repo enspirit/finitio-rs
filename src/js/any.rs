@@ -1,8 +1,10 @@
+use snafu::Whatever;
+
 use crate::schema::{TypeInclude, any::Any};
 
 impl<T> TypeInclude<T> for Any {
-    fn include(&self, _: &T) -> Result<bool, &'static str> {
-        Ok(true)
+    fn include(&self, _: &T) -> Result<(), Whatever> {
+        Ok(())
     }
 }
 

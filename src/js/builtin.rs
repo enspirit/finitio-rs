@@ -1,27 +1,29 @@
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, builtin::Builtin};
 
 impl TypeInclude<serde_json::Value> for Builtin {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self.target.as_str() {
             "Number" => {
                 match v {
-                    serde_json::Value::Number(_) => Ok(true),
-                    _ => Err("Not a valid builtin Number")
+                    serde_json::Value::Number(_) => Ok(()),
+                    v => whatever!("Not a valid builtin Number: {}", v)
                 }
             },
             "String" => {
                 match v {
-                    serde_json::Value::String(_) => Ok(true),
-                    _ => Err("Not a valid builtin String")
+                    serde_json::Value::String(_) => Ok(()),
+                    v => whatever!("Not a valid builtin String: {}", v)
                 }
             },
             "Boolean" => {
                 match v {
-                    serde_json::Value::Bool(_) => Ok(true),
-                    _ => Err("Not a valid builtin Boolean")
+                    serde_json::Value::Bool(_) => Ok(()),
+                    v => whatever!("Not a valid builtin Boolean: {}", v)
                 }
             },
-            &_ => Err("Invalid builtin type name")
+            &_ => whatever!("Unsupported builtin type name: {}", self.target)
         }
     }
 }

@@ -1,12 +1,14 @@
+use snafu::{Whatever, whatever};
+
 use crate::schema::{TypeInclude, tuple::{Tuple}, heading::{Heading, Attribute}};
 
 impl TypeInclude<serde_json::Value> for Tuple {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Object(obj) => {
                 self.heading.include(v)
             },
-            _ => Err("Invalid source type")
+            v => whatever!("Invalid source type for Tuple: {}", v)
         }
     }
 }

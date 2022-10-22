@@ -1,22 +1,29 @@
+use snafu::{Whatever, whatever, ResultExt};
+
 use crate::schema::{TypeInclude, seq::Seq};
 
 impl TypeInclude<serde_json::Value> for Seq {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(a) => {
-                let ok = a.iter().all(|x| {
-                    match self.elm_type.include(x) {
-                        Ok(_) => true,
-                        Err(_) => false,
+                let first_invalid = a.iter().position(|v| {
+                    match self.elm_type.include(v) {
+                        Ok(_) => false,
+                        Err(_) => true,
                     }
                 });
-                if ok {
-                    Ok(true)
-                } else {
-                    Err("Seq contains invalid value")
+                match first_invalid {
+                    None => Ok(()),
+                    Some(index) => {
+                        let value = a.get(index).unwrap();
+                        let err = self.elm_type
+                            .include(value)
+                            .unwrap_err();
+                        whatever!("Seq contains invalid value at index {}: {}\n{}", index, value, err)
+                    }
                 }
             },
-            _ => Err("Not an array"),
+            v => whatever!("Not an array: {}", v),
         }
     }
 }
