@@ -20,7 +20,7 @@ use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
 pub trait TypeInclude<T> {
-    fn include(&self, _: &T) -> Result<bool, Error>;
+    fn include(&self, _: &T) -> Result<bool, &'static str>;
 }
 
 #[derive(Clone, Debug)]

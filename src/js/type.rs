@@ -3,7 +3,7 @@ use std::io::Error;
 use crate::schema::{TypeInclude, Type};
 
 impl TypeInclude<serde_json::Value> for Type {
-  fn include(&self, v: &serde_json::Value) -> Result<bool, Error> {
+  fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
       match self {
           Type::Any(t) => t.include(v),
           Type::Nil(t) => t.include(v),

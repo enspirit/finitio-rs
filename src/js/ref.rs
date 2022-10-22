@@ -1,15 +1,13 @@
-use std::{borrow::Borrow, rc::Rc};
-
-use crate::schema::{TypeInclude, r#ref::Ref, TypeRef};
+use crate::schema::{TypeInclude, r#ref::Ref, TypeRef, builtin::Builtin};
 
 impl TypeInclude<serde_json::Value> for Ref {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, std::io::Error> {
+    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
         self.target.include(v)
     }
 }
 
 impl TypeInclude<serde_json::Value> for TypeRef {
-    fn include(&self, v: &serde_json::Value) -> Result<bool, std::io::Error> {
+    fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
         match self {
             TypeRef::Any(t) => {
                 t.any_.upgrade().unwrap().borrow_mut().include(v)
@@ -44,7 +42,40 @@ impl TypeInclude<serde_json::Value> for TypeRef {
             TypeRef::Relation(t) => {
                 t.relation_.upgrade().unwrap().borrow_mut().include(v)
             },
-            TypeRef::Unresolved { name, position } => todo!(),
+            TypeRef::Unresolved { name: _, position: _ } => todo!(),
         }
     }
+}
+
+
+#[cfg(test)]
+use crate::schema::{any::Any, nil::Nil, r#type::Type};
+#[test]
+fn test_include_builtin() {
+    use crate::common::FilePosition;
+
+    let position = FilePosition { line: 2, column: 2};
+
+    let str = Ref {
+        position: position.clone(),
+        target: Type::Builtin(Builtin {
+            position: position.clone(),
+            target: String::from("String")
+        })
+    };
+
+    let nil = serde_json::Value::Null {};
+    assert_eq!(str.include(&nil).is_ok(), false);
+
+    let number = serde_json::json!(12);
+    assert_eq!(str.include(&number).is_ok(), false);
+
+    let string = serde_json::json!("foo");
+    assert_eq!(str.include(&string).is_ok(), true);
+
+    let obj = serde_json::json!({});
+    assert_eq!(str.include(&obj).is_ok(), false);
+
+    let arr = serde_json::json!([]);
+    assert_eq!(str.include(&arr).is_ok(), false);
 }

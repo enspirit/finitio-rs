@@ -9,7 +9,7 @@ use super::typemap::TypeMap;
 
 #[derive(Clone, Debug)]
 pub struct Tuple {
-    pub attributes: Vec<Attribute>,
+    pub attributes: HashMap<String, Attribute>,
     pub position: FilePosition,
 }
 
@@ -25,14 +25,15 @@ impl Tuple {
             .heading
             .attributes
             .iter()
-            .map(|att| {
+            .fold(HashMap::new(), |mut acc, att| {
                 let att_type = Type::from_fio(&att.att_type);
-                Attribute {
+                let attribute = Attribute {
                     name: att.name.to_string(),
                     att_type,
-                }
-            })
-            .collect();
+                };
+                acc.entry(att.name.to_string()).or_insert(attribute);
+                acc
+            });
         Self {
             attributes,
             position: ftuple.position.clone(),
@@ -40,7 +41,7 @@ impl Tuple {
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-        for att in self.attributes.iter_mut() {
+        for (_, att) in self.attributes.iter_mut() {
             att.att_type.resolve(type_map)?
         }
         Ok(())
