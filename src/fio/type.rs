@@ -48,6 +48,7 @@ pub fn parse_type(input: Span) -> IResult<Span, Type> {
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
         map(preceded(ws, parse_nil), Type::NilType),
+        map(preceded(ws, parse_relation), Type::RelationType),
         map(preceded(ws, parse_ref), Type::RefType),
         map(preceded(ws, parse_seq), Type::SeqType),
         map(preceded(ws, parse_set), Type::SetType),
@@ -78,10 +79,10 @@ pub fn parse_subtypeable(input: Span) -> IResult<Span, Type> {
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
         map(preceded(ws, parse_ref), Type::RefType),
+        map(preceded(ws, parse_relation), Type::RelationType),
         map(preceded(ws, parse_seq), Type::SeqType),
         map(preceded(ws, parse_set), Type::SetType),
         map(preceded(ws, parse_tuple), Type::TupleType),
-        map(preceded(ws, parse_relation), Type::RelationType),
     ))(input)
 }
 
