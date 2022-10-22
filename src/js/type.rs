@@ -1,6 +1,6 @@
 use std::io::Error;
 
-use crate::schema::{TypeInclude, Type};
+use crate::schema::{TypeInclude, Type, TypeDef};
 
 impl TypeInclude<serde_json::Value> for Type {
   fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
@@ -17,5 +17,23 @@ impl TypeInclude<serde_json::Value> for Type {
           Type::Tuple(t) => t.include(v),
           Type::Relation(t) => t.include(v),
       }
+  }
+}
+
+impl TypeInclude<serde_json::Value> for TypeDef {
+  fn include(&self, v: &serde_json::Value) -> Result<bool, &'static str> {
+      match self {
+        TypeDef::AnyType(t) => t.target.borrow_mut().include(v),
+        TypeDef::NilType(t) => t.target.borrow_mut().include(v),
+        TypeDef::BuiltinType(t) => t.target.borrow_mut().include(v),
+        TypeDef::RefType(t) => t.target.borrow_mut().include(v),
+        TypeDef::SeqType(t) => t.target.borrow_mut().include(v),
+        TypeDef::SetType(t) => t.target.borrow_mut().include(v),
+        TypeDef::UnionType(t) => t.target.borrow_mut().include(v),
+        TypeDef::StructType(t) => t.target.borrow_mut().include(v),
+        TypeDef::SubType(t) => t.target.borrow_mut().include(v),
+        TypeDef::TupleType(t) => t.target.borrow_mut().include(v),
+        TypeDef::RelationType(t) => t.target.borrow_mut().include(v),
+    }
   }
 }

@@ -17,6 +17,7 @@ Tuple = {
     optional_age  :?  Number
 }
 
+SeqTuple = [Tuple]
 Relation = {{ name: String, age: Number }}
 
 Password = String( s | s.length >= 8 )
