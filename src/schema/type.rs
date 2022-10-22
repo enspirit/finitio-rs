@@ -1,3 +1,4 @@
+use std::io::Error;
 use std::rc::Rc;
 use std::{cell::RefCell, rc::Weak};
 
@@ -18,11 +19,15 @@ use super::typedef::TypeDef;
 use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
+pub trait TypeInclude<T> {
+    fn include(&self, _: &T) -> Result<bool, Error>;
+}
+
 #[derive(Clone, Debug)]
 pub enum Type {
-    Nil(FilePosition),
-    Any(FilePosition),
-    Builtin(String),
+    Nil(Nil),
+    Any(Any),
+    Builtin(Builtin),
     Ref(TypeRef),
     Seq(Seq),
     Set(Set),
@@ -184,9 +189,9 @@ impl TypeRef {
 impl Type {
     pub fn from_fio(ftype: &fio::Type) -> Self {
         match ftype {
-            fio::Type::NilType(t) => Self::Nil(t.position.clone()),
-            fio::Type::AnyType(t) => Self::Any(t.position.clone()),
-            fio::Type::BuiltinType(t) => Self::Builtin(t.name.clone()),
+            fio::Type::NilType(t) => Self::Nil(Nil::from_fio(t)),
+            fio::Type::AnyType(t) => Self::Any(Any::from_fio(t)),
+            fio::Type::BuiltinType(t) => Self::Builtin(Builtin::from_fio(t)),
             fio::Type::RefType(t) => Self::Ref(TypeRef::Unresolved {
                 name: t.name.clone(),
                 position: t.position.clone(),
