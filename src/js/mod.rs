@@ -11,5 +11,6 @@ mod union;
 mod sub;
 mod tuple;
 mod r#struct;
+mod heading;
 
 pub use schema::generate_json;

@@ -30,4 +30,5 @@ pub use seq::SeqType;
 pub use set::SetType;
 pub use sub::SubType;
 pub use tuple::TupleType;
+pub use heading::Heading;
 pub use union::UnionType;

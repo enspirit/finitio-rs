@@ -14,6 +14,7 @@ pub mod r#type;
 pub mod typedef;
 pub mod typemap;
 pub mod union;
+pub mod heading;
 
 pub use r#type::{Type, TypeRef, TypeInclude};
 pub use schema::Schema;
