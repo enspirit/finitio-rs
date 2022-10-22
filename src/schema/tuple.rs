@@ -24,7 +24,6 @@ impl Tuple {
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-        self.heading.resolve(type_map);
-        Ok(())
+        self.heading.resolve(type_map)
     }
 }
