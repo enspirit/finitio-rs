@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::schema::{TypeInclude, tuple::{Tuple, Attribute}};
 
 impl TypeInclude<serde_json::Value> for Tuple {
@@ -13,7 +11,9 @@ impl TypeInclude<serde_json::Value> for Tuple {
                 }
 
                 // check for missing props
-                let missing = self.attributes.keys().filter(|prop| !obj.contains_key(*prop));
+                let missing = self.attributes.values().filter(|prop| {
+                    !prop.optional && !obj.contains_key(&prop.name)
+                });
                 if missing.peekable().peek().is_some() {
                     return Err("The tuple is missing properties")
                 }
@@ -23,8 +23,8 @@ impl TypeInclude<serde_json::Value> for Tuple {
                     let att = self.attributes.get(*name).unwrap();
                     let is_valid = att.att_type.include(value);
                     match is_valid {
-                        Ok(_) => true,
-                        Err(_) => false,
+                        Ok(_) => false,
+                        Err(_) => true,
                     }
                 });
 
@@ -40,7 +40,10 @@ impl TypeInclude<serde_json::Value> for Tuple {
 }
 
 #[cfg(test)]
+use std::collections::HashMap;
+#[cfg(test)]
 use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
+
 #[test]
 fn test_include_tuple() {
     use crate::common::FilePosition;
@@ -63,15 +66,18 @@ fn test_include_tuple() {
     let attributes = HashMap::from([
         ("name".to_string(), Attribute {
             name: String::from("name"),
-            att_type: builtin_str
+            att_type: builtin_str,
+            optional: false
         }),
         ("age".to_string(), Attribute {
             name: String::from("age"),
-            att_type: builtin_num
+            att_type: builtin_num,
+            optional: false
         }),
         ("extra".to_string(), Attribute {
             name: String::from("extra"),
-            att_type: any_t
+            att_type: any_t,
+            optional: true
         }),
     ]);
     let tuple = Type::Tuple(Tuple {
@@ -93,6 +99,10 @@ fn test_include_tuple() {
 
     // Valid
     let valid = serde_json::json!({ "name": "Foo", "age": 22, "extra": "Bar" });
-    assert_eq!(tuple.include(&valid).is_ok(), false, "obj with valid props&types is valid");
+    assert_eq!(tuple.include(&valid).is_ok(), true, "obj with valid props&types is valid");
+
+    // Valid (optional prop missing)
+    let valid = serde_json::json!({ "name": "Foo", "age": 22 });
+    assert_eq!(tuple.include(&valid).is_ok(), true, "obj with missing optional props is valid");
 
 }

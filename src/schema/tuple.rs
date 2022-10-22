@@ -17,6 +17,7 @@ pub struct Tuple {
 pub struct Attribute {
     pub name: String,
     pub att_type: Type,
+    pub optional: bool
 }
 
 impl Tuple {
@@ -30,6 +31,7 @@ impl Tuple {
                 let attribute = Attribute {
                     name: att.name.to_string(),
                     att_type,
+                    optional: att.optional
                 };
                 acc.entry(att.name.to_string()).or_insert(attribute);
                 acc
