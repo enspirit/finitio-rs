@@ -1,4 +1,6 @@
-use snafu::{Whatever, whatever};
+use std::ops::Deref;
+
+use snafu::{Whatever, whatever, OptionExt};
 
 use crate::schema::{TypeInclude, tuple::{Tuple}, heading::{Heading, Attribute}};
 
@@ -33,12 +35,12 @@ impl TypeInclude<serde_json::Value> for Heading {
                 }
 
                 // validate all properties
-                let errors = obj.iter().fold(Vec::new(), |mut errors, (name, value)| {
+                let mut errors = obj.iter().fold(Vec::new(), |mut errors, (name, value)| {
                     let att = self.attributes.get(name).unwrap();
                     let is_valid = att.att_type.include(value);
                     match is_valid {
                         Ok(_) => (),
-                        Err(e) => errors.push(e),
+                        Err(_) => errors.push((att, value)),
                     }
                     errors
                 });
@@ -46,7 +48,10 @@ impl TypeInclude<serde_json::Value> for Heading {
                 if errors.is_empty() {
                     Ok(())
                 } else {
-                    whatever!("Object does not match heading: {}", v)
+                    let (attr, value) = errors.pop().unwrap();
+                    let err = attr.att_type.include(value);
+                    whatever!(err, "Invalid value for attribute: {}", attr.name);
+                    Ok(())
                 }
             },
             v => whatever!("Value not compatible with heading: {}", v)

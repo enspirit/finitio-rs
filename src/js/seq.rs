@@ -1,4 +1,4 @@
-use snafu::{Whatever, whatever, ResultExt};
+use snafu::{Whatever, whatever, ResultExt, OptionExt};
 
 use crate::schema::{TypeInclude, seq::Seq};
 
@@ -16,10 +16,8 @@ impl TypeInclude<serde_json::Value> for Seq {
                     None => Ok(()),
                     Some(index) => {
                         let value = a.get(index).unwrap();
-                        let err = self.elm_type
-                            .include(value)
-                            .unwrap_err();
-                        whatever!("Seq contains invalid value at index {}: {}\n{}", index, value, err)
+                        self.elm_type.include(value)
+                            .with_whatever_context(|_| format!("Seq contains invalid value at index {}", index))
                     }
                 }
             },

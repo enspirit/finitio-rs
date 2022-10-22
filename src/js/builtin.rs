@@ -1,5 +1,5 @@
 use snafu::{Whatever, whatever};
-
+use snafu::prelude::*;
 use crate::schema::{TypeInclude, builtin::Builtin};
 
 impl TypeInclude<serde_json::Value> for Builtin {

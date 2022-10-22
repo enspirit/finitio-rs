@@ -66,7 +66,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match schema::TypeInclude::include(&t, &data) {
                         Ok(_) => println!("Valid data!"),
                         Err(e) => {
-                            eprintln!("{}", e);
+                            eprintln!("Invalid data: {}", e);
+                            for cause in ErrorCompat::iter_chain(&e) {
+                                eprintln!("due to: {}", cause);
+                            }
                         }
                     }
                 },
