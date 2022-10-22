@@ -1,6 +1,5 @@
 use std::collections::{HashSet, HashMap};
 use serde_hashkey::{from_key, to_key, Error, Key};
-
 use snafu::{Whatever, whatever, ResultExt};
 use crate::schema::{TypeInclude, set::Set};
 
@@ -10,16 +9,16 @@ impl TypeInclude<serde_json::Value> for Set {
             serde_json::Value::Array(a) => {
                 let mut values = HashMap::new();
 
-                for value in a {
+                for (pos, value) in a.iter().enumerate() {
                     let key = to_key(value).unwrap();
 
                     self.elm_type.include(value)
-                        .with_whatever_context(|_| format!("Set contains invalid value at index {}", value))?;
+                        .with_whatever_context(|_| format!("Set contains invalid value at index {}", pos))?;
 
                     match values.insert(key.clone(), value) {
                         None => {},
                         Some(val) => {
-                            whatever!("Set contains duplicated value: {}", val)
+                            whatever!("Set contains duplicated value: {}", value)
                         }
                     }
                 }

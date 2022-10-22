@@ -81,6 +81,7 @@ pub fn parse_subtypeable(input: Span) -> IResult<Span, Type> {
         map(preceded(ws, parse_ref), Type::RefType),
         map(preceded(ws, parse_relation), Type::RelationType),
         map(preceded(ws, parse_seq), Type::SeqType),
+        map(preceded(ws, parse_relation), Type::RelationType),
         map(preceded(ws, parse_set), Type::SetType),
         map(preceded(ws, parse_tuple), Type::TupleType),
     ))(input)

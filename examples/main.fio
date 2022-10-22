@@ -20,7 +20,12 @@ Tuple = {
 }
 
 SeqTuple = [Tuple]
-Relation = {{ name: String, age: Number }}
+Relation = {{
+    name          :   String,
+    optional_age  :?  Number,
+    hobbies       :?  <String, String>,
+    emails        :?  {String}
+}}
 
 Password = String( s | s.length >= 8 )
 

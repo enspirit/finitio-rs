@@ -1,31 +1,36 @@
-use snafu::{Whatever, whatever};
+use std::collections::{HashSet, HashMap};
+use serde_hashkey::{from_key, to_key, Error, Key};
+use snafu::{Whatever, whatever, ResultExt};
 
 use crate::schema::{TypeInclude, relation::{Relation}, heading::{Heading, Attribute}};
 
 impl TypeInclude<serde_json::Value> for Relation {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
+        println!("enterine relation");
         match v {
             serde_json::Value::Array(arr) => {
-                let invalid = arr.iter().fold(Vec::new(), |mut errors, row| {
-                    match self.heading.include(row) {
-                        Ok(_) => {},
-                        Err(err) => errors.push(err)
+                let mut values = HashMap::new();
+
+                for (pos, row) in arr.iter().enumerate() {
+                    let key = to_key(row).unwrap();
+
+                    self.heading.include(row)
+                        .with_whatever_context(|_| format!("Set contains invalid value at index {}", pos))?;
+
+                    match values.insert(key.clone(), row) {
+                        None => {},
+                        Some(val) => {
+                            whatever!("Relation contains duplicated tuple: {}", row)
+                        }
                     }
-                    errors
-                });
-                if invalid.is_empty() {
-                    Ok(())
-                } else {
-                    whatever!("Array contains invalid rows: {}", invalid[0])
                 }
+                Ok(())
             },
             v => whatever!("Invalid value for Relation: {}", v)
         }
     }
 }
 
-#[cfg(test)]
-use std::collections::HashMap;
 #[cfg(test)]
 use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
 

@@ -1,4 +1,5 @@
 use finitio::fio;
+use finitio::js;
 use finitio::schema;
 use finitio::schema::Schema;
 use finitio::schema::errors::ValidationError;
@@ -45,7 +46,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Parse { schema } => {
             // Parse FIO file
             match parse(schema) {
-                Ok(_) => println!("Your schema is valid!"),
+                Ok(adt) => {
+                    println!("Your schema is valid!");
+                },
                 Err(err) => panic!("Your schema is invalid: {}", err),
             }
             Ok(())
@@ -122,6 +125,7 @@ pub fn parse(filename: &String) -> Result<Schema, ValidationError> {
             fios.push(fio);
         }
     }
+    // js::generate_json(&fios[0]);
 
     schema::Schema::from_fio(fios.iter())
 }
