@@ -15,7 +15,8 @@ PosInteger = Integer(i | i > 0)
 Tuple = {
     name          :   String,
     optional_age  :?  Number,
-    hobbies       :?  <String, String>
+    hobbies       :?  <String, String>,
+    emails        :?  {String}
 }
 
 SeqTuple = [Tuple]

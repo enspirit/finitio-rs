@@ -76,6 +76,7 @@ dependencies = [
  "nom",
  "nom_locate",
  "serde",
+ "serde-hashkey",
  "serde_json",
  "snafu",
 ]
@@ -207,6 +208,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "728eb6351430bccb993660dfffc5a72f91ccc1295abaa8ce19b27ebe4f75568b"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-hashkey"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e5c09cf4453c1729458bfcc92d8cbbd4f720825b4d43f1442237b02167e39e6d"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
