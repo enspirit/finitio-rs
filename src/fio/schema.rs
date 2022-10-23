@@ -1,3 +1,5 @@
+use std::{path::{Path, PathBuf}, collections::HashSet};
+use std::fs;
 #[cfg(test)]
 use crate::{
     common::FilePosition,
@@ -13,7 +15,7 @@ use nom::{
 };
 use serde::{Serialize, Deserialize};
 
-use crate::fio::common::Span;
+use crate::{fio::common::Span, schema::errors::ValidationError};
 use crate::fio::errors::ParseError;
 
 use super::{
@@ -32,6 +34,46 @@ pub enum SchemaPart {
     Import(Import),
     TypeDef(TypeDef),
     Comment(String)
+}
+
+
+pub fn parse_file(filename: &String) -> Result<Vec<Schema>, ValidationError> {
+    let contents = fs::read_to_string(filename)
+        .expect("Should have been able to read the file");
+
+    let mut fios: Vec<Schema> = Vec::new();
+
+    // Parse entry point
+    let main_fio = parse_schema(&contents[..]).expect("Syntax error");
+    fios.push(main_fio);
+
+    // Parse imports
+    if !fios[0].imports.is_empty() {
+        let base_dir = Path::new(filename).parent()
+            .expect("base_dir could not be determined from source");
+        let mut included_files: HashSet<PathBuf> = HashSet::new();
+        let mut includes = fios[0]
+            .imports
+            .iter()
+            .map(|p| (base_dir.join(&p.filename)))
+            .collect::<Vec<_>>();
+        while !includes.is_empty() {
+            let include = includes.remove(0);
+            if included_files.contains(&include) {
+                continue;
+            }
+            included_files.insert(include.clone());
+            let contents = fs::read_to_string(include.clone())
+                .expect("Should have been able to read the file");
+            let fio = parse_schema(&contents[..])
+                .expect("Syntax error");
+            let dir = include.parent().unwrap();
+            includes.extend(fio.imports.iter().map(|inc| dir.join(&inc.filename)));
+            fios.push(fio);
+        }
+    }
+
+    Ok(fios)
 }
 
 pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {

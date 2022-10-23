@@ -25,7 +25,7 @@ pub use r#ref::RefType;
 pub use r#struct::StructType;
 pub use r#type::Type;
 pub use relation::RelationType;
-pub use schema::{parse_schema, Schema};
+pub use schema::{parse_schema, parse_file, Schema};
 pub use seq::SeqType;
 pub use set::SetType;
 pub use sub::SubType;
