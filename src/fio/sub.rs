@@ -18,7 +18,7 @@ use nom::combinator::{peek, eof};
 use nom::sequence::{pair, preceded, separated_pair, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
-use super::common::{ws, take_until_unbalanced};
+use super::common::{ws, take_parenth_content};
 
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -36,7 +36,7 @@ pub struct SubType {
 }
 
 pub fn parse_anonymous_constraint(input: Span) -> IResult<Span, Constraint> {
-    let constraint = take_until_unbalanced('(', ')');
+    let constraint = take_parenth_content('(', ')');
 
     let (rest, parsed) = match constraint(input) {
         Ok(c) => c,
@@ -44,8 +44,6 @@ pub fn parse_anonymous_constraint(input: Span) -> IResult<Span, Constraint> {
             return Err(err)
         }
     };
-    println!("parsed --> {}", parsed);
-    println!("res --> {}", rest);
 
     let mut param = preceded(ws, terminated(alphanumeric1, preceded(ws, tag("|"))));
     match param(parsed) {

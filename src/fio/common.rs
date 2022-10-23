@@ -36,7 +36,7 @@ pub fn parse_identifier(input: Span) -> IResult<Span, String> {
 }
 
 /// Adapted from https://github.com/getreu/parse-hyperlinks
-pub fn take_until_unbalanced<'a>(
+pub fn take_parenth_content<'a>(
     opening_bracket: char,
     closing_bracket: char,
 ) -> impl Fn(Span<'a>) -> IResult<Span, Span> {
@@ -66,10 +66,8 @@ pub fn take_until_unbalanced<'a>(
                 // Can not happen.
                 _ => unreachable!(),
             };
-            // We found the unmatched closing bracket.
-            if bracket_counter == -1 {
-                // We do not consume it.
-                index -= closing_bracket.len_utf8();
+            // We found the closing parenth.
+            if bracket_counter == 0 {
                 return Ok((i.slice(index..), i.slice(1..index-1)))
             };
         }
