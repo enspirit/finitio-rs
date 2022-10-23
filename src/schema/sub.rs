@@ -17,7 +17,9 @@ impl Sub {
     pub(crate) fn from_fio(fseq: &fio::SubType) -> Self {
         let base_type = Type::from_fio(&fseq.base);
         let constraints: Vec<Constraint> = fseq.constraints.iter().map(|c| {
-            Constraint::new(c.param.clone(), c.expr.clone(), c.position.clone())
+            let mut c = Constraint::new(c.param.clone(), c.expr.clone(), c.position.clone());
+            c.compile().unwrap();
+            c
         }).collect();
         Self {
             base_type: Box::new(base_type),
