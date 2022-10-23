@@ -18,16 +18,22 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Parses finitio schemas and outputs the adt in a json format
     Parse {
         #[arg(short, long)]
+        /// The path to the entry point schema file (.fio)
         schema: String,
     },
+    /// Validates json data agains a finitio type
     Validate {
         #[arg(short, long)]
+        /// The type that should be used to dress the data
         r#type: String,
         #[arg(short, long)]
+        /// The path to the entry point schema file (.fio)
         schema: String,
         #[arg(short, long)]
+        /// the path to the json file to be validated
         json: String,
     },
 }
