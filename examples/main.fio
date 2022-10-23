@@ -10,14 +10,18 @@ Union = Number | Integer | Nil
 
 Struct = <Number | Integer, Nil>
 
-PosInteger = Integer(i | i >= 100)
+PosInteger = Integer(i | i >= 0)
+
+Password = String(s | len(s) > 10)
 
 Tuple = {
     father        :?  Tuple,
     name          :   String,
     age           :?  PosInteger,
     hobbies       :?  <String, String>,
-    emails        :?  {String}
+    emails        :?  {String},
+    password      :? Password,
+    confirm       :? Password
 }
 
 SeqTuple = [Tuple]
@@ -28,10 +32,6 @@ Relation = {{
     emails        :?  {String}
 }}
 
-Password = String(s | len(s) > 10)
+User = Tuple( t | t.password == t.confirm )
 
-User = {
-    name: String,
-    password: Password,
-    confirm: Password
-}( t | t.password == t.confirm )
+Users = [User]
