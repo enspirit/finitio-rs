@@ -1,39 +1,55 @@
+// You can imports other schemas from other (relative) files
 @import scalars.fio
 
-# A sequence of Integers. Eg: valid: [1, 2, 3, 4], invalid: [1, 2, "3"]
+// Capturing sequences (aka arrays) of values is straightforward. Sequences are ordered and may contain duplicates:
 Seq = [Integer]
 
-# A set of Integers. Eg: valid: [1, 2, 3], invalid: [1, 2, 2]
+// Capturing sets of values is straightforward too. Set are unordered and may not contain duplicates:
 Set = {Integer}
 
-Complex = {{[Set]}} // Can we comment on the same line ?
-
-Union = Number | Integer | Nil
-
+/*
+  Capturing structs is straightforward too.
+  Structs can be used to capture ordered pairs, triples, and so forth. Each struct component has its own type:
+  */
 Struct = <Number | Integer, Nil>
 
+/*
+  Sub types are subsets of values.
+  Finitio uses so-called 'specialization by constraint' to define sub types. E.g., the set of positive integers can be defined as follows:
+  */
 PosInteger = Integer(i | i >= 0)
-
 Password = String(s | len(s) > 10)
 
-Tuple = {
-    father        :?  Tuple,
+/*
+  In some respect, union types are the dual of subtypes.
+  They allow defining new types by generalization, through the union of the sets of values defined by other types
+
+  Union types are also very useful for capturing possibly missing information (aka NULL/nil).
+  For instance, the following type will capture either a number or null:
+  */
+MaybeNumber = Number | Nil
+
+/*
+  Tuples capture information facts. Unlike structs, tuples have named components called 'attributes'.
+  Attributes must all have different names and are not particularly ordered.
+  A set of such (name,Type) pairs is called a heading.
+  */
+Person = {
     name          :   String,
-    age           :?  PosInteger,
-    hobbies       :?  <String, String>,
+    age           :   PosInteger,
     emails        :?  {String},
-    password      :? Password,
-    confirm       :? Password
-}
+    password      :?  Password,
+    confirm       :?  Password
+}(p | p.password == p.confirm)
 
-SeqTuple = [Tuple]
-Relation = {{
-    name          :   String,
-    age           :?  PosInteger,
-    hobbies       :?  <String, String>,
-    emails        :?  {String}
+/*
+  Relations are sets of tuples, all of which have the same heading.
+  The notation for defining relation types naturally follows:
+  */
+People = {{
+  name          :   String,
+  age           :   PosInteger,
+  emails        :?  {String},
+  password      :?  Password,
+  confirm       :?  Password
 }}
-
-User = Tuple( t | t.password == t.confirm )
-
-Users = [User]

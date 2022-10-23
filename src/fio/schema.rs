@@ -17,7 +17,7 @@ use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
 
 use super::{
-    common::{ws, ws1, peol_comment},
+    common::{ws, ws1, peol_comment, parse_comment},
     import::{parse_import, Import},
     typedef::{parse_typedef, TypeDef},
 };
@@ -60,7 +60,7 @@ fn parse_schema_part(input: Span) -> IResult<Span, SchemaPart> {
     alt((
         map(parse_import, SchemaPart::Import),
         map(parse_typedef, SchemaPart::TypeDef),
-        map(peol_comment, SchemaPart::Comment)
+        map(parse_comment, SchemaPart::Comment)
     ))(input)
 }
 

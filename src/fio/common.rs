@@ -1,9 +1,9 @@
 use nom::{
-    bytes::complete::{take_while, take_while1, is_not, tag},
+    bytes::complete::{take_while, take_while1, is_not, tag, take_until},
     character::complete::char,
     combinator::{map, opt, value},
     error::{Error, ErrorKind, ParseError},
-    sequence::{pair, preceded},
+    sequence::{pair, preceded, tuple},
     Err, IResult, Slice, branch::alt
 };
 use nom_locate::LocatedSpan;
@@ -34,6 +34,23 @@ pub fn peol_comment(input: Span) -> IResult<Span, String> {
             f.to_string()
         }
     )(input)
+}
+
+pub fn multiline_comment(input: Span) -> IResult<Span, String> {
+    map(
+        tuple((
+            tag("/*"),
+            take_until("*/"),
+            tag("*/")
+          )),
+        |(_, comment, _): (LocatedSpan<&str>, LocatedSpan<&str>, LocatedSpan<&str>)| {
+            comment.to_string()
+        }
+    )(input)
+}
+
+pub fn parse_comment(input: Span) -> IResult<Span, String> {
+    alt((peol_comment, multiline_comment))(input)
 }
 
 const IDENTIFIER_EXTRA: &str = "._";
