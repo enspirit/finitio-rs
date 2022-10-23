@@ -5,7 +5,7 @@ use crate::fio::common::Span;
 use nom::{combinator::map, IResult};
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TupleType {
     pub heading: Heading,
     pub position: FilePosition,

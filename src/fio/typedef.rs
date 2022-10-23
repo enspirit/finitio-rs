@@ -18,7 +18,7 @@ use nom::{
 use serde::{Serialize, Deserialize};
 
 use super::common::ws;
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TypeDef {
     pub name: String,
     pub target: Type,

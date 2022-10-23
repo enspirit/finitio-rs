@@ -8,7 +8,7 @@ use crate::{
 use nom::{bytes::complete::tag, combinator::map, sequence::preceded, IResult};
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuiltinType {
     pub name: String,
     pub position: FilePosition,

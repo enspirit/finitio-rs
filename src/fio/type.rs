@@ -24,7 +24,7 @@ use super::{
     r#ref::{parse_ref, RefType},
 };
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 pub enum Type {
     AnyType(AnyType),

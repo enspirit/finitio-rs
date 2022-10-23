@@ -9,7 +9,7 @@ use serde::{Serialize, Deserialize};
 use super::Type;
 use super::{common::ws, r#type::parse_type};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SetType {
     pub elm_type: Box<Type>,
     pub position: FilePosition,

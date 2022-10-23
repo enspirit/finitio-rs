@@ -1,3 +1,5 @@
+use snafu::OptionExt;
+
 use super::any::Any;
 use super::nil::Nil;
 use super::r#struct::Struct;
@@ -12,6 +14,8 @@ use super::{
     TypeDef,
 };
 use crate::{common::FilePosition, fio};
+use std::collections::HashMap;
+use std::path::PathBuf;
 use std::{
     cell::RefCell,
     collections::{btree_map::Entry as BTreeMapEntry, BTreeMap},
@@ -25,13 +29,27 @@ pub struct Schema {
 
 impl Schema {
 
-    pub fn from_fio<'a>(fschemas: impl Iterator<Item = &'a crate::fio::Schema>,) -> Result<Self, ValidationError> {
-        let mut ns = Self::default();
-        let mut type_map = TypeMap::new();
-        let mut names: BTreeMap<String, FilePosition> = BTreeMap::new();
+    pub fn from_fios<'a>(fschemas: HashMap<PathBuf, fio::Schema>) -> Result<HashMap<PathBuf, Self>, ValidationError> {
+        let mut schemas: HashMap<PathBuf, Schema> = HashMap::new();
 
-        for fschema in fschemas {
-            for typedef in fschema.type_defs.iter() {
+        for (path, fschema) in fschemas.iter() {
+            let mut typedefs = fschema.type_defs.to_vec();
+            let mut names: BTreeMap<String, FilePosition> = BTreeMap::new();
+            let mut ns = Self::default();
+            let mut type_map = TypeMap::new();
+
+            for import in fschema.imports.iter() {
+                let base_dir = path.parent()
+                    .expect("base_dir could not be determined from source");
+
+                let import_path = base_dir.join(&import.filename);
+                let schema = fschemas.get(&import_path)
+                    .expect("Import refers to a schema that hasn't been loaded/parsed");
+
+                typedefs.append(&mut schema.type_defs.to_vec());
+            }
+
+            for typedef in typedefs.iter() {
                 // Check for name clash, keep track of typedef position for nice error messages
                 match names.entry(typedef.name.to_owned()) {
                     BTreeMapEntry::Occupied(entry) => {
@@ -127,9 +145,10 @@ impl Schema {
                     ),
                 }
             }
+            ns.resolve(&type_map)?;
+            schemas.insert(path.clone(), ns);
         }
-        ns.resolve(&type_map)?;
-        Ok(ns)
+        Ok(schemas)
     }
 
     fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {

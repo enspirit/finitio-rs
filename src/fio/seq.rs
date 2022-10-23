@@ -12,7 +12,7 @@ use serde::{Serialize, Deserialize};
 use super::common::ws;
 use super::r#type::parse_type;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SeqType {
     pub elm_type: Box<Type>,
     pub position: FilePosition,

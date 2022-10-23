@@ -18,13 +18,13 @@ use crate::fio::common::assert_parse;
 
 use super::RefType;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Heading {
     pub attributes: Vec<Attribute>,
     pub position: FilePosition,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Attribute {
     pub name: String,
     pub att_type: Type,

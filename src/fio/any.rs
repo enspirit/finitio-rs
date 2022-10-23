@@ -7,7 +7,7 @@ use serde::{Serialize, Deserialize};
 
 use super::common::ws;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AnyType {
     pub position: FilePosition,
 }

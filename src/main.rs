@@ -46,22 +46,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::Parse { schema } => {
             // Parse FIO file
-            let fios = match parse_file(schema) {
+            let fios = match parse_file(&PathBuf::from(schema)) {
                 Ok(fios) => fios,
                 Err(err) => panic!("Your schema is invalid: {}", err),
             };
-            js::generate_json(&fios[0]);
+            js::generate_json(&fios);
 
             Ok(())
         },
         Commands::Validate { json, schema, r#type } => {
-            // Parse FIO files
-            let fios = match parse_file(schema) {
+            let entry_path = PathBuf::from(schema);
+            let fios = match parse_file(&entry_path) {
                 Ok(schema) => schema,
                 Err(err) => panic!("Your schema is invalid: {}", err),
             };
 
-            let schema = match schema::Schema::from_fio(fios.iter()) {
+            let schemas = match schema::Schema::from_fios(fios) {
                 Ok(schema) => schema,
                 Err(e) => {
                     eprintln!("{}", e);
@@ -69,9 +69,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 },
             };
 
+            let entry_schema = schemas.get(&entry_path).expect("Found entry schema in map of validated schemas");
             let data = load_json(json)?;
 
-            let target = schema.types.get(r#type);
+            let target = entry_schema.types.get(r#type);
             match target {
                 Some(t) => {
                     let t = t.to_owned();

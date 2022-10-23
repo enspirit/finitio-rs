@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, collections::HashSet};
+use std::{path::{Path, PathBuf}, collections::{HashSet, HashMap}};
 use std::fs;
 #[cfg(test)]
 use crate::{
@@ -24,7 +24,7 @@ use super::{
     typedef::{parse_typedef, TypeDef},
 };
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Schema {
     pub imports: Vec<Import>,
     pub type_defs: Vec<TypeDef>,
@@ -37,22 +37,21 @@ pub enum SchemaPart {
 }
 
 
-pub fn parse_file(filename: &String) -> Result<Vec<Schema>, ValidationError> {
+pub fn parse_file(filename: &PathBuf) -> Result<HashMap<PathBuf, Schema>, ValidationError> {
     let contents = fs::read_to_string(filename)
         .expect("Should have been able to read the file");
 
-    let mut fios: Vec<Schema> = Vec::new();
+    let mut fios: HashMap<PathBuf, Schema> = HashMap::new();
 
     // Parse entry point
     let main_fio = parse_schema(&contents[..]).expect("Syntax error");
-    fios.push(main_fio);
 
     // Parse imports
-    if !fios[0].imports.is_empty() {
-        let base_dir = Path::new(filename).parent()
+    if !main_fio.imports.is_empty() {
+        let base_dir = filename.parent()
             .expect("base_dir could not be determined from source");
         let mut included_files: HashSet<PathBuf> = HashSet::new();
-        let mut includes = fios[0]
+        let mut includes = main_fio
             .imports
             .iter()
             .map(|p| (base_dir.join(&p.filename)))
@@ -69,9 +68,11 @@ pub fn parse_file(filename: &String) -> Result<Vec<Schema>, ValidationError> {
                 .expect("Syntax error");
             let dir = include.parent().unwrap();
             includes.extend(fio.imports.iter().map(|inc| dir.join(&inc.filename)));
-            fios.push(fio);
+            fios.insert(include, fio);
         }
     }
+    fios.insert(filename.clone(), main_fio);
+
 
     Ok(fios)
 }

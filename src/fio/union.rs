@@ -14,7 +14,7 @@ use serde::{Serialize, Deserialize};
 use super::common::ws;
 use super::r#type::{parse_type, parse_type_but_union};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UnionType {
     pub candidates: Vec<Type>,
     pub position: FilePosition,

@@ -8,7 +8,7 @@ use crate::{
 use nom::{combinator::map, IResult};
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RefType {
     pub name: String,
     pub position: FilePosition,

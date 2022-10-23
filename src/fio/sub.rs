@@ -21,14 +21,14 @@ use serde::{Serialize, Deserialize};
 use super::common::{ws, take_parenth_content};
 
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Constraint {
     pub param: String,
     pub expr: String,
     pub position: FilePosition,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SubType {
     pub base: Box<Type>,
     pub constraints: Vec<Constraint>,
