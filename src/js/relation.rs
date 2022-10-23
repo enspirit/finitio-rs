@@ -6,7 +6,6 @@ use crate::schema::{TypeInclude, relation::{Relation}, heading::{Heading, Attrib
 
 impl TypeInclude<serde_json::Value> for Relation {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
-        println!("enterine relation");
         match v {
             serde_json::Value::Array(arr) => {
                 let mut values = HashMap::new();

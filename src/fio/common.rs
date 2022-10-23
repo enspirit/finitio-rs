@@ -4,7 +4,7 @@ use nom::{
     combinator::{map, opt},
     error::{Error, ErrorKind, ParseError},
     sequence::{pair, preceded},
-    Err, IResult,
+    Err, IResult, Slice
 };
 use nom_locate::LocatedSpan;
 
@@ -35,19 +35,12 @@ pub fn parse_identifier(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
-/// Taken from https://github.com/getreu/parse-hyperlinks
-/// A parser similar to `nom::bytes::complete::take_until()`, but that does not
-/// stop at balanced opening and closing tags. It is designed to work inside the
-/// `nom::sequence::delimited()` parser.
-///
-/// It skips nested brackets until it finds an extra unbalanced closing bracket. Escaped brackets
-/// like `\<` and `\>` are not considered as brackets and are not counted. This function is
-/// very similar to `nom::bytes::complete::take_until(">")`, except it also takes nested brackets.
-pub fn take_until_unbalanced(
+/// Adapted from https://github.com/getreu/parse-hyperlinks
+pub fn take_until_unbalanced<'a>(
     opening_bracket: char,
     closing_bracket: char,
-) -> impl Fn(&str) -> IResult<&str, &str> {
-    move |i: &str| {
+) -> impl Fn(Span<'a>) -> IResult<Span, Span> {
+    move |i: Span<'a>| {
         let mut index = 0;
         let mut bracket_counter = 0;
         while let Some(n) = &i[index..].find(&[opening_bracket, closing_bracket, '\\'][..]) {
@@ -77,12 +70,12 @@ pub fn take_until_unbalanced(
             if bracket_counter == -1 {
                 // We do not consume it.
                 index -= closing_bracket.len_utf8();
-                return Ok((&i[index..], &i[0..index]));
+                return Ok((i.slice(index..), i.slice(1..index-1)))
             };
         }
 
         if bracket_counter == 0 {
-            Ok(("", i))
+            return Ok((i.slice(index..), i.slice(1..index-1)))
         } else {
             Err(Err::Error(Error::from_error_kind(i, ErrorKind::TakeUntil)))
         }

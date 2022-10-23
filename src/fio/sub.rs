@@ -1,33 +1,25 @@
 use super::any::parse_any;
 use super::builtin::parse_builtin;
-use super::errors::ParseError;
-use super::nil::parse_nil;
 use super::r#ref::parse_ref;
 use super::r#struct::parse_struct;
 use super::relation::parse_relation;
 use super::seq::parse_seq;
 use super::set::parse_set;
 use super::tuple::parse_tuple;
-#[cfg(test)]
-use super::{any, builtin, nil, r#ref};
-#[cfg(test)]
-use crate::fio::common::assert_parse;
 use crate::fio::r#type::parse_subtypeable;
 
-use super::{BuiltinType, NilType, RefType, SeqType, Type, UnionType};
+use super::{Type};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
 use nom::branch::alt;
-use nom::bytes::complete::{escaped_transform, is_not, take_till, take_until1};
+use nom::bytes::complete::{escaped_transform, is_not, take_until1};
 use nom::character::complete::alphanumeric1;
-use nom::combinator::{map_parser, not, peek, recognize, rest};
-use nom::multi::{separated_list0, separated_list1};
+use nom::combinator::{peek, eof};
 use nom::sequence::{pair, preceded, separated_pair, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
+use super::common::{ws, take_until_unbalanced};
 
-use super::common::{parse_identifier, take_until_unbalanced, ws};
-use super::r#type::{parse_type, parse_type_but_union};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Constraint {
@@ -43,23 +35,30 @@ pub struct SubType {
     pub position: FilePosition,
 }
 
-pub fn parse_parenth_content(input: Span) -> IResult<Span, String> {
-    let parser = escaped_transform(is_not("\\)"), '\\', alt((map(tag(")"), |_| "\\)"),)));
-
-    map(parser, |s| s)(input)
-}
-
 pub fn parse_anonymous_constraint(input: Span) -> IResult<Span, Constraint> {
-    let param = preceded(ws, terminated(alphanumeric1, preceded(ws, tag("|"))));
-    let anonymous = preceded(ws, parse_parenth_content);
+    let constraint = take_until_unbalanced('(', ')');
 
-    let parser = delimited(tag("("), pair(param, anonymous), tag(")"));
+    let (rest, parsed) = match constraint(input) {
+        Ok(c) => c,
+        Err(err) => {
+            return Err(err)
+        }
+    };
+    println!("parsed --> {}", parsed);
+    println!("res --> {}", rest);
 
-    map(parser, |(param, content)| Constraint {
-        param: param.to_string(),
-        expr: content,
-        position: input.into(),
-    })(input)
+    let mut param = preceded(ws, terminated(alphanumeric1, preceded(ws, tag("|"))));
+    match param(parsed) {
+        Ok((expr, param)) => {
+            let c = Constraint {
+                param: param.to_string(),
+                expr: expr.to_string(),
+                position: parsed.into(),
+            };
+            Ok((rest, c))
+        }
+        Err(err) => return Err(err)
+    }
 }
 
 pub fn check_looks_like_sub(input: Span) -> IResult<Span, bool> {
@@ -98,14 +97,10 @@ pub fn parse_sub(input: Span) -> IResult<Span, SubType> {
     }
 }
 
-#[test]
-fn test_parse_parenth_content() {
-    let output = parse_parenth_content(Span::new(r"whichever expression\) we want )"));
-
-    let output = output.unwrap();
-    assert_eq!(output.0.fragment(), &")");
-    assert_eq!(output.1, r"whichever expression\) we want ".to_string())
-}
+#[cfg(test)]
+use super::{BuiltinType, SeqType};
+#[cfg(test)]
+use crate::fio::common::assert_parse;
 
 #[test]
 fn test_parse_anonymous_constraint() {
@@ -113,8 +108,8 @@ fn test_parse_anonymous_constraint() {
         parse_anonymous_constraint(Span::new("(s | some anonymous constraint)")),
         Constraint {
             param: "s".to_string(),
-            expr: "some anonymous constraint".to_string(),
-            position: FilePosition { line: 1, column: 1 },
+            expr: " some anonymous constraint".to_string(),
+            position: FilePosition { line: 1, column: 2 },
         },
     );
 }
@@ -139,8 +134,8 @@ fn test_parse_sub_type_builtin() {
             })),
             constraints: vec![Constraint {
                 param: "s".to_string(),
-                expr: "some anonymous constraint".to_string(),
-                position: FilePosition { line: 1, column: 8 },
+                expr: " some anonymous constraint".to_string(),
+                position: FilePosition { line: 1, column: 9 },
             }],
         },
     );
@@ -161,10 +156,10 @@ fn test_parse_sub_type_seq() {
             })),
             constraints: vec![Constraint {
                 param: "s".to_string(),
-                expr: "some anonymous constraint".to_string(),
+                expr: " some anonymous constraint".to_string(),
                 position: FilePosition {
                     line: 1,
-                    column: 10,
+                    column: 11,
                 },
             }],
         },
@@ -188,11 +183,33 @@ fn test_parse_sub_type_spacing() {
             })),
             constraints: vec![Constraint {
                 param: "s".to_string(),
-                expr: "some anonymous constraint".to_string(),
+                expr: "   \nsome anonymous constraint".to_string(),
                 position: FilePosition {
                     line: 1,
-                    column: 13,
+                    column: 14,
                 },
+            }],
+        },
+    );
+}
+
+
+#[test]
+fn test_parse_sub_type_functions_in_expressions() {
+    assert_parse(
+        parse_sub(Span::new(
+            ".String(s | len(s) > 8)",
+        )),
+        SubType {
+            position: FilePosition { line: 1, column: 1 },
+            base: Box::new(Type::BuiltinType(BuiltinType {
+                name: "String".to_string(),
+                position: FilePosition { line: 1, column: 1 },
+            })),
+            constraints: vec![Constraint {
+                param: "s".to_string(),
+                expr: " len(s) > 8".to_string(),
+                position: FilePosition { line: 1, column: 9 },
             }],
         },
     );
