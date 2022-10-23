@@ -26,18 +26,18 @@ use super::{
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
-pub enum Type {
+pub enum Type<'a> {
     AnyType(AnyType),
     NilType(NilType),
-    BuiltinType(BuiltinType),
+    BuiltinType(BuiltinType<'a>),
     RefType(RefType),
-    SeqType(SeqType),
-    SetType(SetType),
-    UnionType(UnionType),
-    StructType(StructType),
-    SubType(SubType),
-    TupleType(TupleType),
-    RelationType(RelationType),
+    SeqType(SeqType<'a>),
+    SetType(SetType<'a>),
+    UnionType(UnionType<'a>),
+    StructType(StructType<'a>),
+    SubType(SubType<'a>),
+    TupleType(TupleType<'a>),
+    RelationType(RelationType<'a>),
 }
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {

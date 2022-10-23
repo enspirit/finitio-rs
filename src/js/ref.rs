@@ -2,13 +2,13 @@ use snafu::Whatever;
 
 use crate::schema::{TypeInclude, r#ref::Ref, TypeRef};
 
-impl TypeInclude<serde_json::Value> for Ref {
+impl TypeInclude<serde_json::Value> for Ref<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.target.include(v)
     }
 }
 
-impl TypeInclude<serde_json::Value> for TypeRef {
+impl TypeInclude<serde_json::Value> for TypeRef<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self {
             TypeRef::Any(t) => {
@@ -62,7 +62,7 @@ fn test_include_builtin() {
         position: position.clone(),
         target: Type::Builtin(Builtin {
             position: position.clone(),
-            target: String::from("String")
+            target: "String"
         })
     };
 

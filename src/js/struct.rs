@@ -2,7 +2,7 @@ use snafu::{Whatever, whatever, ResultExt};
 
 use crate::schema::{TypeInclude, r#struct::Struct};
 
-impl TypeInclude<serde_json::Value> for Struct {
+impl TypeInclude<serde_json::Value> for Struct<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(arr) => {
@@ -44,11 +44,11 @@ fn test_include_struct() {
     });
     let builtin_str = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("String")
+        target: "String"
     });
     let builtin_num = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("Number")
+        target: "Number"
     });
 
     // Tuple { name: .String, age: .Number, extra: Any }

@@ -19,9 +19,9 @@ use serde::{Serialize, Deserialize};
 
 use super::common::ws;
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct TypeDef {
+pub struct TypeDef<'a> {
     pub name: String,
-    pub target: Type,
+    pub target: Type<'a>,
     pub position: FilePosition,
 }
 
@@ -71,7 +71,7 @@ fn test_parse_typedef() {
             name: String::from("Number"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::BuiltinType(builtin::BuiltinType {
-                name: String::from("Number"),
+                name: "Number",
                 position: FilePosition {
                     line: 1,
                     column: 10,

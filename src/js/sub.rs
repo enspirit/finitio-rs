@@ -1,7 +1,7 @@
 use snafu::{Whatever, ResultExt, whatever};
 use crate::{schema::{TypeInclude, sub::{Sub}, constraint::ConstraintExecute}};
 
-impl TypeInclude<serde_json::Value> for Sub {
+impl TypeInclude<serde_json::Value> for Sub<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.base_type.include(v)
             .with_whatever_context(|_| format!("Value rejected by base type: {}", v))?;
@@ -31,7 +31,7 @@ fn test_include_sub() {
 
     let builtin_num = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("Number")
+        target: "Number"
     });
 
     // PosInt = .Number(i | i > 0)

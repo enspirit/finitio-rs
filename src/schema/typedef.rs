@@ -15,18 +15,18 @@ use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
 #[derive(Clone, Debug)]
-pub enum TypeDef {
+pub enum TypeDef<'a> {
     AnyType(TypeDefStr<Any>),
     NilType(TypeDefStr<Nil>),
-    BuiltinType(TypeDefStr<Builtin>),
-    RefType(TypeDefStr<Ref>),
-    SeqType(TypeDefStr<Seq>),
-    SetType(TypeDefStr<Set>),
-    UnionType(TypeDefStr<Union>),
-    StructType(TypeDefStr<Struct>),
-    SubType(TypeDefStr<Sub>),
-    TupleType(TypeDefStr<Tuple>),
-    RelationType(TypeDefStr<Relation>),
+    BuiltinType(TypeDefStr<Builtin<'a>>),
+    RefType(TypeDefStr<Ref<'a>>),
+    SeqType(TypeDefStr<Seq<'a>>),
+    SetType(TypeDefStr<Set<'a>>),
+    UnionType(TypeDefStr<Union<'a>>),
+    StructType(TypeDefStr<Struct<'a>>),
+    SubType(TypeDefStr<Sub<'a>>),
+    TupleType(TypeDefStr<Tuple<'a>>),
+    RelationType(TypeDefStr<Relation<'a>>),
 }
 
 #[derive(Clone, Debug)]
@@ -35,7 +35,7 @@ pub struct TypeDefStr<T> {
     pub target: Rc<RefCell<T>>,
 }
 
-impl TypeDef {
+impl<'a> TypeDef<'a> {
     pub fn name(&self) -> String {
         match self {
             TypeDef::AnyType(t) => t.name.clone(),
@@ -52,7 +52,7 @@ impl TypeDef {
         }
     }
 
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &'a TypeMap<'a>) -> Result<(), ValidationError> {
         match self {
             TypeDef::AnyType(t) => t.target.borrow_mut().resolve(type_map),
             TypeDef::NilType(t) => t.target.borrow_mut().resolve(type_map),

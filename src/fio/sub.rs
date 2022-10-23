@@ -28,8 +28,8 @@ pub struct Constraint {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct SubType {
-    pub base: Box<Type>,
+pub struct SubType<'a> {
+    pub base: Box<Type<'a>>,
     pub constraints: Vec<Constraint>,
     pub position: FilePosition,
 }
@@ -126,7 +126,7 @@ fn test_parse_sub_type_builtin() {
         SubType {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::BuiltinType(BuiltinType {
-                name: "Number".to_string(),
+                name: "Number",
                 position: FilePosition { line: 1, column: 1 },
             })),
             constraints: vec![Constraint {
@@ -146,7 +146,7 @@ fn test_parse_sub_type_seq() {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::SeqType(SeqType {
                 elm_type: Box::new(Type::BuiltinType(BuiltinType {
-                    name: "Number".to_string(),
+                    name: "Number",
                     position: FilePosition { line: 1, column: 2 },
                 })),
                 position: FilePosition { line: 1, column: 1 },
@@ -173,7 +173,7 @@ fn test_parse_sub_type_spacing() {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::SeqType(SeqType {
                 elm_type: Box::new(Type::BuiltinType(BuiltinType {
-                    name: "Number".to_string(),
+                    name: "Number",
                     position: FilePosition { line: 1, column: 3 },
                 })),
                 position: FilePosition { line: 1, column: 1 },
@@ -200,7 +200,7 @@ fn test_parse_sub_type_functions_in_expressions() {
         SubType {
             position: FilePosition { line: 1, column: 1 },
             base: Box::new(Type::BuiltinType(BuiltinType {
-                name: "String".to_string(),
+                name: "String",
                 position: FilePosition { line: 1, column: 1 },
             })),
             constraints: vec![Constraint {

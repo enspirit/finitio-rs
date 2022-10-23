@@ -6,13 +6,13 @@ use super::r#type::Type;
 use super::typemap::TypeMap;
 
 #[derive(Clone, Debug)]
-pub struct Union {
-    pub candidates: Vec<Type>,
+pub struct Union<'a> {
+    pub candidates: Vec<Type<'a>>,
     pub position: FilePosition,
 }
 
-impl Union {
-    pub(crate) fn from_fio(funion: &fio::UnionType) -> Self {
+impl<'a> Union<'a> {
+    pub(crate) fn from_fio(funion: &'a fio::UnionType) -> Self {
         let candidates = funion
             .candidates
             .iter()
@@ -25,7 +25,7 @@ impl Union {
         }
     }
 
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &'a TypeMap<'a>) -> Result<(), ValidationError> {
         for c in self.candidates.iter_mut() {
             c.resolve(type_map)?;
         }

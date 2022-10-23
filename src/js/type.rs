@@ -2,7 +2,7 @@ use snafu::Whatever;
 
 use crate::schema::{TypeInclude, Type, TypeDef};
 
-impl TypeInclude<serde_json::Value> for Type {
+impl TypeInclude<serde_json::Value> for Type<'_> {
   fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
           Type::Any(t) => t.include(v),
@@ -20,7 +20,7 @@ impl TypeInclude<serde_json::Value> for Type {
   }
 }
 
-impl TypeInclude<serde_json::Value> for TypeDef {
+impl TypeInclude<serde_json::Value> for TypeDef<'_> {
   fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
         TypeDef::AnyType(t) => t.target.borrow().include(v),

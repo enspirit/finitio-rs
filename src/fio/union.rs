@@ -9,8 +9,8 @@ use super::common::ws;
 use super::r#type::{parse_type_but_union};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct UnionType {
-    pub candidates: Vec<Type>,
+pub struct UnionType<'a> {
+    pub candidates: Vec<Type<'a>>,
     pub position: FilePosition,
 }
 

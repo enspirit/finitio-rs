@@ -19,15 +19,15 @@ use crate::fio::common::assert_parse;
 use super::RefType;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct Heading {
-    pub attributes: Vec<Attribute>,
+pub struct Heading<'a> {
+    pub attributes: Vec<Attribute<'a>>,
     pub position: FilePosition,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct Attribute {
+pub struct Attribute<'a> {
     pub name: String,
-    pub att_type: Type,
+    pub att_type: Type<'a>,
     pub optional: bool,
     pub position: FilePosition,
 }

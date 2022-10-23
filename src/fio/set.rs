@@ -10,8 +10,8 @@ use super::Type;
 use super::{common::ws, r#type::parse_type};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct SetType {
-    pub elm_type: Box<Type>,
+pub struct SetType<'a> {
+    pub elm_type: Box<Type<'a>>,
     pub position: FilePosition,
 }
 
@@ -50,7 +50,7 @@ fn test_parse_set() {
         SetType {
             position: FilePosition { line: 1, column: 1 },
             elm_type: Box::new(Type::BuiltinType(builtin::BuiltinType {
-                name: "Number".to_string(),
+                name: "Number",
                 position: FilePosition { line: 1, column: 2 },
             })),
         },

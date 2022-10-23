@@ -8,20 +8,20 @@ use super::r#type::Type;
 use super::typemap::TypeMap;
 
 #[derive(Clone, Debug)]
-pub struct Heading {
-    pub attributes: HashMap<String, Attribute>,
+pub struct Heading<'a> {
+    pub attributes: HashMap<String, Attribute<'a>>,
     pub position: FilePosition,
 }
 
 #[derive(Clone, Debug)]
-pub struct Attribute {
+pub struct Attribute<'a> {
     pub name: String,
-    pub att_type: Type,
+    pub att_type: Type<'a>,
     pub optional: bool
 }
 
-impl Heading {
-    pub(crate) fn from_fio(fheading: &fio::Heading) -> Self {
+impl<'a> Heading<'a> {
+    pub(crate) fn from_fio(fheading: &fio::Heading<'a>) -> Self {
         let attributes = fheading
             .attributes
             .iter()
@@ -41,7 +41,7 @@ impl Heading {
         }
     }
 
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &TypeMap<'a>) -> Result<(), ValidationError> {
         for (_, att) in self.attributes.iter_mut() {
             att.att_type.resolve(type_map)?
         }

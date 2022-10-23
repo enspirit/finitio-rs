@@ -20,14 +20,14 @@ use super::{
 };
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct Schema {
+pub struct Schema<'a> {
     pub imports: Vec<Import>,
-    pub type_defs: Vec<TypeDef>,
+    pub type_defs: Vec<TypeDef<'a>>,
 }
 
-pub enum SchemaPart {
+pub enum SchemaPart<'a> {
     Import(Import),
-    TypeDef(TypeDef),
+    TypeDef(TypeDef<'a>),
     Comment(String)
 }
 
@@ -134,7 +134,7 @@ Integer = Number
                     name: String::from("Number"),
                     position: FilePosition { line: 4, column: 1 },
                     target: Type::BuiltinType(builtin::BuiltinType {
-                        name: String::from("Number"),
+                        name: "Number",
                         position: FilePosition {
                             line: 4,
                             column: 10

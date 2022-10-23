@@ -8,8 +8,8 @@ use super::common::ws;
 use super::r#type::{parse_type};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct StructType {
-    pub elements: Vec<Type>,
+pub struct StructType<'a> {
+    pub elements: Vec<Type<'a>>,
     pub position: FilePosition,
 }
 

@@ -25,33 +25,33 @@ pub trait TypeInclude<T> {
 }
 
 #[derive(Clone, Debug)]
-pub enum Type {
+pub enum Type<'a> {
     Nil(Nil),
     Any(Any),
-    Builtin(Builtin),
-    Ref(TypeRef),
-    Seq(Seq),
-    Set(Set),
-    Union(Union),
-    Struct(Struct),
-    Sub(Sub),
-    Tuple(Tuple),
-    Relation(Relation),
+    Builtin(Builtin<'a>),
+    Ref(TypeRef<'a>),
+    Seq(Seq<'a>),
+    Set(Set<'a>),
+    Union(Union<'a>),
+    Struct(Struct<'a>),
+    Sub(Sub<'a>),
+    Tuple(Tuple<'a>),
+    Relation(Relation<'a>),
 }
 
 #[derive(Clone, Debug)]
-pub enum TypeRef {
+pub enum TypeRef<'a> {
     Any(AnyRef),
     Nil(NilRef),
-    Builtin(BuiltinRef),
-    Ref(RefRef),
-    Seq(SeqRef),
-    Set(SetRef),
-    Union(UnionRef),
-    Struct(StructRef),
-    Sub(SubRef),
-    Tuple(TupleRef),
-    Relation(RelationRef),
+    Builtin(BuiltinRef<'a>),
+    Ref(RefRef<'a>),
+    Seq(SeqRef<'a>),
+    Set(SetRef<'a>),
+    Union(UnionRef<'a>),
+    Struct(StructRef<'a>),
+    Sub(SubRef<'a>),
+    Tuple(TupleRef<'a>),
+    Relation(RelationRef<'a>),
     Unresolved {
         name: String,
         position: FilePosition,
@@ -69,50 +69,50 @@ pub struct NilRef {
 }
 
 #[derive(Clone, Debug)]
-pub struct BuiltinRef {
-    pub builtin_: Weak<RefCell<Builtin>>,
+pub struct BuiltinRef<'a> {
+    pub builtin_: Weak<RefCell<Builtin<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct RefRef {
-    pub ref_: Weak<RefCell<Ref>>,
+pub struct RefRef<'a> {
+    pub ref_: Weak<RefCell<Ref<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SeqRef {
-    pub seq_: Weak<RefCell<Seq>>,
+pub struct SeqRef<'a> {
+    pub seq_: Weak<RefCell<Seq<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SetRef {
-    pub set_: Weak<RefCell<Set>>,
+pub struct SetRef<'a> {
+    pub set_: Weak<RefCell<Set<'a>>>,
 }
 #[derive(Clone, Debug)]
-pub struct UnionRef {
-    pub union_: Weak<RefCell<Union>>,
+pub struct UnionRef<'a> {
+    pub union_: Weak<RefCell<Union<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct StructRef {
-    pub struct_: Weak<RefCell<Struct>>,
+pub struct StructRef<'a> {
+    pub struct_: Weak<RefCell<Struct<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SubRef {
-    pub sub_: Weak<RefCell<Sub>>,
+pub struct SubRef<'a> {
+    pub sub_: Weak<RefCell<Sub<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct TupleRef {
-    pub tuple_: Weak<RefCell<Tuple>>,
+pub struct TupleRef<'a> {
+    pub tuple_: Weak<RefCell<Tuple<'a>>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct RelationRef {
-    pub relation_: Weak<RefCell<Relation>>,
+pub struct RelationRef<'a> {
+    pub relation_: Weak<RefCell<Relation<'a>>>,
 }
 
-impl TypeRef {
+impl<'a> TypeRef<'a> {
     pub fn position(&self) -> FilePosition {
         match self {
             Self::Any(r) => r.any_.upgrade().unwrap().borrow().position.clone(),
@@ -132,7 +132,7 @@ impl TypeRef {
             } => position.clone(),
         }
     }
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &'a TypeMap<'a>) -> Result<(), ValidationError> {
         if let Self::Unresolved {
             name,
             position: _position,
@@ -187,8 +187,8 @@ impl TypeRef {
     }
 }
 
-impl Type {
-    pub fn from_fio(ftype: &fio::Type) -> Self {
+impl<'a> Type<'a> {
+    pub fn from_fio(ftype: &'a fio::Type) -> Self {
         match ftype {
             fio::Type::NilType(t) => Self::Nil(Nil::from_fio(t)),
             fio::Type::AnyType(t) => Self::Any(Any::from_fio(t)),
@@ -214,7 +214,7 @@ impl Type {
         })
     }
 
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &'a TypeMap<'a>) -> Result<(), ValidationError> {
         match self {
             Self::Nil(_) | Self::Any(_) | Self::Builtin(_) => Ok(()), // Should probably not consider all Builtin ok here?
 

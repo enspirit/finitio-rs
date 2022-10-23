@@ -6,8 +6,8 @@ use nom::{combinator::map, IResult};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct TupleType {
-    pub heading: Heading,
+pub struct TupleType<'a> {
+    pub heading: Heading<'a>,
     pub position: FilePosition,
 }
 

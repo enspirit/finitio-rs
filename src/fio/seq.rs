@@ -13,8 +13,8 @@ use super::common::ws;
 use super::r#type::parse_type;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct SeqType {
-    pub elm_type: Box<Type>,
+pub struct SeqType<'a> {
+    pub elm_type: Box<Type<'a>>,
     pub position: FilePosition,
 }
 
@@ -53,7 +53,7 @@ fn test_parse_seq() {
         SeqType {
             position: FilePosition { line: 1, column: 1 },
             elm_type: Box::new(Type::BuiltinType(builtin::BuiltinType {
-                name: "Number".to_string(),
+                name: "Number",
                 position: FilePosition { line: 1, column: 2 },
             })),
         },

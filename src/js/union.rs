@@ -2,7 +2,7 @@ use snafu::{Whatever, whatever};
 
 use crate::schema::{TypeInclude, union::Union};
 
-impl TypeInclude<serde_json::Value> for Union {
+impl TypeInclude<serde_json::Value> for Union<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         let found = self.candidates.iter().find(|x| {
             match x.include(v) {
@@ -27,11 +27,11 @@ fn test_include_union() {
 
     let builtin_str = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("String")
+        target: "String"
     });
     let builtin_num = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("Number")
+        target: "Number"
     });
 
     // Union of .Number or .String

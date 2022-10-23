@@ -21,13 +21,13 @@ use std::{
 };
 
 #[derive(Default, Debug)]
-pub struct Schema {
-    pub types: BTreeMap<String, TypeDef>,
+pub struct Schema<'a> {
+    pub types: BTreeMap<String, TypeDef<'a>>,
 }
 
-impl Schema {
+impl<'a> Schema<'a> {
 
-    pub fn from_fios<'a>(fschemas: HashMap<PathBuf, fio::Schema>) -> Result<HashMap<PathBuf, Self>, ValidationError> {
+    pub fn from_fios(fschemas: HashMap<PathBuf, fio::Schema>) -> Result<HashMap<PathBuf, Self>, ValidationError> {
         let mut schemas: HashMap<PathBuf, Schema> = HashMap::new();
 
         for (path, fschema) in fschemas.iter() {

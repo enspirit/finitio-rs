@@ -2,7 +2,7 @@ use snafu::{Whatever, whatever, ResultExt};
 
 use crate::schema::{TypeInclude, seq::Seq};
 
-impl TypeInclude<serde_json::Value> for Seq {
+impl TypeInclude<serde_json::Value> for Seq<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(a) => {

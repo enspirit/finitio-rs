@@ -5,8 +5,8 @@ use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct RelationType {
-    pub heading: Heading,
+pub struct RelationType<'a> {
+    pub heading: Heading<'a>,
     pub position: FilePosition,
 }
 

@@ -1,9 +1,9 @@
 use snafu::{Whatever, whatever};
 use crate::schema::{TypeInclude, builtin::Builtin};
 
-impl TypeInclude<serde_json::Value> for Builtin {
+impl TypeInclude<serde_json::Value> for Builtin<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
-        match self.target.as_str() {
+        match self.target {
             "Number" => {
                 match v {
                     serde_json::Value::Number(_) => Ok(()),
@@ -37,7 +37,7 @@ fn test_include_builtin() {
 
     let builtin_str = Builtin {
         position: position.clone(),
-        target: String::from("String")
+        target: "String"
     };
 
     let nil = serde_json::Value::Null {};

@@ -6,13 +6,13 @@ use super::r#type::Type;
 use super::typemap::TypeMap;
 
 #[derive(Clone, Debug)]
-pub struct Seq {
-    pub elm_type: Box<Type>,
+pub struct Seq<'a> {
+    pub elm_type: Box<Type<'a>>,
     pub position: FilePosition,
 }
 
-impl Seq {
-    pub(crate) fn from_fio(fseq: &fio::SeqType) -> Self {
+impl<'a> Seq<'a> {
+    pub(crate) fn from_fio(fseq: &'a fio::SeqType) -> Self {
         let elm_type = Type::from_fio(&fseq.elm_type);
         Self {
             elm_type: Box::new(elm_type),
@@ -20,7 +20,7 @@ impl Seq {
         }
     }
 
-    pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
+    pub(crate) fn resolve(&mut self, type_map: &'a TypeMap<'a>) -> Result<(), ValidationError> {
         self.elm_type.resolve(type_map)?;
         Ok(())
     }

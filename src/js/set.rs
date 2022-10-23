@@ -3,7 +3,7 @@ use serde_hashkey::{to_key};
 use snafu::{Whatever, whatever, ResultExt};
 use crate::schema::{TypeInclude, set::Set};
 
-impl TypeInclude<serde_json::Value> for Set {
+impl TypeInclude<serde_json::Value> for Set<'_> {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(a) => {
@@ -38,7 +38,7 @@ fn test_include_set() {
     let position = FilePosition { line: 2, column: 2};
     let builtin_str = Type::Builtin(Builtin {
         position: position.clone(),
-        target: String::from("String")
+        target: "String"
     });
 
     // Set of .String
