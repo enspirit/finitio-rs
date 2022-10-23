@@ -12,37 +12,37 @@ impl TypeInclude<serde_json::Value> for TypeRef {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self {
             TypeRef::Any(t) => {
-                t.any_.upgrade().unwrap().borrow_mut().include(v)
+                t.any_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Nil(t) => {
-                t.nil_.upgrade().unwrap().borrow_mut().include(v)
+                t.nil_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Builtin(t) => {
-                t.builtin_.upgrade().unwrap().borrow_mut().include(v)
+                t.builtin_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Ref(t) => {
-                t.ref_.upgrade().unwrap().borrow_mut().include(v)
+                t.ref_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Seq(t) => {
-                t.seq_.upgrade().unwrap().borrow_mut().include(v)
+                t.seq_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Set(t) => {
-                t.set_.upgrade().unwrap().borrow_mut().include(v)
+                t.set_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Union(t) => {
-                t.union_.upgrade().unwrap().borrow_mut().include(v)
+                t.union_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Struct(t) => {
-                t.struct_.upgrade().unwrap().borrow_mut().include(v)
+                t.struct_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Sub(t) => {
-                t.sub_.upgrade().unwrap().borrow_mut().include(v)
+                t.sub_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Tuple(t) => {
-                t.tuple_.upgrade().unwrap().borrow_mut().include(v)
+                t.tuple_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Relation(t) => {
-                t.relation_.upgrade().unwrap().borrow_mut().include(v)
+                t.relation_.upgrade().unwrap().borrow().include(v)
             },
             TypeRef::Unresolved { name: _, position: _ } => todo!(),
         }

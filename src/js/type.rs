@@ -25,17 +25,17 @@ impl TypeInclude<serde_json::Value> for Type {
 impl TypeInclude<serde_json::Value> for TypeDef {
   fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
-        TypeDef::AnyType(t) => t.target.borrow_mut().include(v),
-        TypeDef::NilType(t) => t.target.borrow_mut().include(v),
-        TypeDef::BuiltinType(t) => t.target.borrow_mut().include(v),
-        TypeDef::RefType(t) => t.target.borrow_mut().include(v),
-        TypeDef::SeqType(t) => t.target.borrow_mut().include(v),
-        TypeDef::SetType(t) => t.target.borrow_mut().include(v),
-        TypeDef::UnionType(t) => t.target.borrow_mut().include(v),
-        TypeDef::StructType(t) => t.target.borrow_mut().include(v),
-        TypeDef::SubType(t) => t.target.borrow_mut().include(v),
-        TypeDef::TupleType(t) => t.target.borrow_mut().include(v),
-        TypeDef::RelationType(t) => t.target.borrow_mut().include(v),
+        TypeDef::AnyType(t) => t.target.borrow().include(v),
+        TypeDef::NilType(t) => t.target.borrow().include(v),
+        TypeDef::BuiltinType(t) => t.target.borrow().include(v),
+        TypeDef::RefType(t) => t.target.borrow().include(v),
+        TypeDef::SeqType(t) => t.target.borrow().include(v),
+        TypeDef::SetType(t) => t.target.borrow().include(v),
+        TypeDef::UnionType(t) => t.target.borrow().include(v),
+        TypeDef::StructType(t) => t.target.borrow().include(v),
+        TypeDef::SubType(t) => t.target.borrow().include(v),
+        TypeDef::TupleType(t) => t.target.borrow().include(v),
+        TypeDef::RelationType(t) => t.target.borrow().include(v),
     }
   }
 }

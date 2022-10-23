@@ -45,19 +45,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::Parse { schema } => {
             // Parse FIO file
-            match parse(schema) {
-                Ok(adt) => {
-                    println!("Your schema is valid!");
-                },
+            let fios = match parse(schema) {
+                Ok(fios) => fios,
                 Err(err) => panic!("Your schema is invalid: {}", err),
-            }
+            };
+            js::generate_json(&fios[0]);
+
             Ok(())
         },
         Commands::Validate { json, schema, r#type } => {
-            // Parse FIO file
-            let schema = match parse(schema) {
+            // Parse FIO files
+            let fios = match parse(schema) {
                 Ok(schema) => schema,
                 Err(err) => panic!("Your schema is invalid: {}", err),
+            };
+
+            let schema = match schema::Schema::from_fio(fios.iter()) {
+                Ok(schema) => schema,
+                Err(e) => {
+                    eprintln!("{}", e);
+                    panic!();
+                },
             };
 
             let data = load_json(json)?;
@@ -90,7 +98,7 @@ pub fn load_json(filename: &String) -> Result<serde_json::Value, Box<dyn Error>>
     Ok(data)
 }
 
-pub fn parse(filename: &String) -> Result<Schema, ValidationError> {
+pub fn parse(filename: &String) -> Result<Vec<fio::Schema>, ValidationError> {
     let contents = fs::read_to_string(filename)
         .expect("Should have been able to read the file");
 
@@ -125,7 +133,6 @@ pub fn parse(filename: &String) -> Result<Schema, ValidationError> {
             fios.push(fio);
         }
     }
-    // js::generate_json(&fios[0]);
 
-    schema::Schema::from_fio(fios.iter())
+    Ok(fios)
 }

@@ -13,8 +13,9 @@ Struct = <Number | Integer, Nil>
 PosInteger = Integer(i | i > 0)
 
 Tuple = {
+    father        :?  Tuple,
     name          :   String,
-    optional_age  :?  Number,
+    age           :?  Number,
     hobbies       :?  <String, String>,
     emails        :?  {String}
 }
