@@ -1,7 +1,7 @@
 use nom::{
     bytes::complete::{take_while, take_while1, is_not, tag, take_until},
     character::complete::char,
-    combinator::{map, opt, value},
+    combinator::{map, opt},
     error::{Error, ErrorKind, ParseError},
     sequence::{pair, preceded, tuple},
     Err, IResult, Slice, branch::alt
@@ -20,7 +20,7 @@ pub fn ws1(input: Span) -> IResult<Span, Span> {
     take_while1(move |c| WHITESPACE.contains(c))(input)
 }
 
-pub fn trailing_comma(input: Span) -> IResult<Span, Option<char>> {
+pub fn _trailing_comma(input: Span) -> IResult<Span, Option<char>> {
     opt(preceded(ws, char(',')))(input)
 }
 

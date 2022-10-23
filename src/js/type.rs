@@ -1,5 +1,3 @@
-use std::io::Error;
-
 use snafu::Whatever;
 
 use crate::schema::{TypeInclude, Type, TypeDef};

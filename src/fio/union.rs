@@ -1,18 +1,12 @@
-#[cfg(test)]
-use super::{any, builtin, nil, r#ref};
-#[cfg(test)]
-use crate::fio::common::assert_parse;
-
-use super::{NilType, RefType, SeqType, Type};
+use super::{Type};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
-use nom::multi::{separated_list0, separated_list1};
+use nom::multi::{separated_list0};
 use nom::sequence::{pair, preceded, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
-
 use super::common::ws;
-use super::r#type::{parse_type, parse_type_but_union};
+use super::r#type::{parse_type_but_union};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UnionType {
@@ -35,6 +29,11 @@ pub fn parse_union(input: Span) -> IResult<Span, UnionType> {
         }
     })(input)
 }
+
+#[cfg(test)]
+use super::{NilType, RefType, SeqType};
+#[cfg(test)]
+use crate::fio::common::assert_parse;
 
 #[test]
 fn test_parse_union_simple() {

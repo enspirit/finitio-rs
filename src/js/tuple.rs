@@ -1,6 +1,6 @@
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, tuple::{Tuple}, heading::{Heading, Attribute}};
+use crate::schema::{TypeInclude, tuple::{Tuple}};
 
 impl TypeInclude<serde_json::Value> for Tuple {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
@@ -17,7 +17,7 @@ impl TypeInclude<serde_json::Value> for Tuple {
 #[cfg(test)]
 use std::collections::HashMap;
 #[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
+use crate::schema::{any::Any, builtin::Builtin, r#type::Type, heading::{Heading, Attribute}};
 
 #[test]
 fn test_include_tuple() {

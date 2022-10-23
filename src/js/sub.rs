@@ -1,5 +1,5 @@
 use snafu::{Whatever, ResultExt, whatever};
-use crate::{schema::{TypeInclude, sub::{Sub}, Constraint, constraint::ConstraintExecute}, js::builtin};
+use crate::{schema::{TypeInclude, sub::{Sub}, constraint::ConstraintExecute}};
 
 impl TypeInclude<serde_json::Value> for Sub {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
@@ -21,7 +21,7 @@ impl TypeInclude<serde_json::Value> for Sub {
 }
 
 #[cfg(test)]
-use crate::schema::{builtin::Builtin, r#type::Type};
+use crate::schema::{builtin::Builtin, r#type::Type, Constraint};
 
 #[test]
 fn test_include_sub() {

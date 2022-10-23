@@ -1,10 +1,5 @@
-use std::{path::{Path, PathBuf}, collections::{HashSet, HashMap}};
+use std::{path::{PathBuf}, collections::{HashSet, HashMap}};
 use std::fs;
-#[cfg(test)]
-use crate::{
-    common::FilePosition,
-    fio::{any, builtin, r#ref, Type},
-};
 
 use nom::{
     branch::alt,
@@ -19,7 +14,7 @@ use crate::{fio::common::Span, schema::errors::ValidationError};
 use crate::fio::errors::ParseError;
 
 use super::{
-    common::{ws, ws1, peol_comment, parse_comment},
+    common::{ws, ws1, parse_comment},
     import::{parse_import, Import},
     typedef::{parse_typedef, TypeDef},
 };
@@ -110,6 +105,13 @@ fn parse_schema_part(input: Span) -> IResult<Span, SchemaPart> {
 pub fn parse_schema_content(input: Span) -> IResult<Span, Vec<SchemaPart>> {
     preceded(ws, terminated(separated_list0(ws1, parse_schema_part), ws))(input)
 }
+
+
+#[cfg(test)]
+use crate::{
+    common::FilePosition,
+    fio::{any, builtin, r#ref, Type},
+};
 
 #[test]
 fn test_parse_schema() {

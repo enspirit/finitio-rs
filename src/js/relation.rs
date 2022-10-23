@@ -1,8 +1,8 @@
-use std::collections::{HashSet, HashMap};
-use serde_hashkey::{from_key, to_key, Error, Key};
+use std::collections::{HashMap};
+use serde_hashkey::{to_key};
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, relation::{Relation}, heading::{Heading, Attribute}};
+use crate::schema::{TypeInclude, relation::{Relation}};
 
 impl TypeInclude<serde_json::Value> for Relation {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
@@ -18,7 +18,7 @@ impl TypeInclude<serde_json::Value> for Relation {
 
                     match values.insert(key.clone(), row) {
                         None => {},
-                        Some(val) => {
+                        Some(_) => {
                             whatever!("Relation contains duplicated tuple: {}", row)
                         }
                     }
@@ -31,7 +31,7 @@ impl TypeInclude<serde_json::Value> for Relation {
 }
 
 #[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
+use crate::schema::{any::Any, heading::{Heading, Attribute}, builtin::Builtin, r#type::Type};
 
 #[test]
 fn test_include_tuple() {

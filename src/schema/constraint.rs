@@ -1,4 +1,4 @@
-use resolver::{Expr, to_value};
+use resolver::{Expr};
 use snafu::{Whatever, ResultExt, whatever};
 
 use crate::common::FilePosition;

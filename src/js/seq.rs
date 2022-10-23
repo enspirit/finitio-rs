@@ -1,4 +1,4 @@
-use snafu::{Whatever, whatever, ResultExt, OptionExt};
+use snafu::{Whatever, whatever, ResultExt};
 
 use crate::schema::{TypeInclude, seq::Seq};
 

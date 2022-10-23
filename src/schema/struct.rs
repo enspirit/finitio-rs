@@ -26,7 +26,7 @@ impl Struct {
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-        for mut c in self.elements.iter_mut() {
+        for c in self.elements.iter_mut() {
             c.resolve(type_map)?;
         }
         Ok(())

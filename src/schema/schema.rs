@@ -1,5 +1,3 @@
-use snafu::OptionExt;
-
 use super::any::Any;
 use super::nil::Nil;
 use super::r#struct::Struct;

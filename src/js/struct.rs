@@ -31,9 +31,7 @@ impl TypeInclude<serde_json::Value> for Struct {
 }
 
 #[cfg(test)]
-use std::collections::HashMap;
-#[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
+use crate::schema::{any::Any, builtin::Builtin, r#type::Type};
 
 #[test]
 fn test_include_struct() {

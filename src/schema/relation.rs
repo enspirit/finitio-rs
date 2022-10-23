@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::common::FilePosition;
 use crate::fio::{self};
 

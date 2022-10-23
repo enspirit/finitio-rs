@@ -1,5 +1,5 @@
-use std::collections::{HashSet, HashMap};
-use serde_hashkey::{from_key, to_key, Error, Key};
+use std::collections::{HashMap};
+use serde_hashkey::{to_key};
 use snafu::{Whatever, whatever, ResultExt};
 use crate::schema::{TypeInclude, set::Set};
 
@@ -17,7 +17,7 @@ impl TypeInclude<serde_json::Value> for Set {
 
                     match values.insert(key.clone(), value) {
                         None => {},
-                        Some(val) => {
+                        Some(_) => {
                             whatever!("Set contains duplicated value: {}", value)
                         }
                     }
@@ -30,13 +30,12 @@ impl TypeInclude<serde_json::Value> for Set {
 }
 
 #[cfg(test)]
-use crate::schema::{any::Any, r#type::Type, builtin::Builtin};
+use crate::schema::{r#type::Type, builtin::Builtin};
 #[test]
 fn test_include_set() {
     use crate::common::FilePosition;
 
     let position = FilePosition { line: 2, column: 2};
-    let any = Type::Any(Any { position: position.clone() });
     let builtin_str = Type::Builtin(Builtin {
         position: position.clone(),
         target: String::from("String")

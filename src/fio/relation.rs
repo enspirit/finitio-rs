@@ -1,19 +1,8 @@
-use super::heading::{parse_heading, Attribute, Heading};
-#[cfg(test)]
-use super::{any, builtin, nil, r#ref};
-#[cfg(test)]
-use crate::fio::common::assert_parse;
-
-use super::{NilType, RefType, SeqType, Type, UnionType};
+use super::heading::{parse_heading, Heading};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
-use nom::multi::{separated_list0, separated_list1};
-use nom::sequence::{pair, preceded, terminated};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
-
-use super::common::ws;
-use super::r#type::{parse_type, parse_type_but_union};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RelationType {
@@ -29,6 +18,11 @@ pub fn parse_relation(input: Span) -> IResult<Span, RelationType> {
         }
     })(input)
 }
+
+#[cfg(test)]
+use super::{heading::Attribute, r#type::{Type}, r#ref::RefType};
+#[cfg(test)]
+use crate::fio::common::assert_parse;
 
 #[test]
 fn test_parse_relation_simple() {

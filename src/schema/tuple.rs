@@ -1,11 +1,8 @@
-use std::collections::HashMap;
-
 use crate::common::FilePosition;
 use crate::fio;
 
 use super::errors::ValidationError;
 use super::heading::Heading;
-use super::r#type::Type;
 use super::typemap::TypeMap;
 
 #[derive(Clone, Debug)]

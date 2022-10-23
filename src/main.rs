@@ -1,19 +1,13 @@
-use finitio::fio;
 use finitio::fio::parse_file;
 use finitio::js;
 use finitio::schema;
-use finitio::schema::Schema;
-use finitio::schema::errors::ValidationError;
 use snafu::ErrorCompat;
-use std::borrow::Borrow;
-use std::collections::HashSet;
 use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
-
-use std::fs;
+use std::path::{PathBuf};
 use clap::{Parser, Subcommand};
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
@@ -50,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(fios) => fios,
                 Err(err) => panic!("Your schema is invalid: {}", err),
             };
-            js::generate_json(&fios);
+            js::generate_json(&fios)?;
 
             Ok(())
         },

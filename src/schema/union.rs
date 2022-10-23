@@ -26,7 +26,7 @@ impl Union {
     }
 
     pub(crate) fn resolve(&mut self, type_map: &TypeMap) -> Result<(), ValidationError> {
-        for mut c in self.candidates.iter_mut() {
+        for c in self.candidates.iter_mut() {
             c.resolve(type_map)?;
         }
         Ok(())

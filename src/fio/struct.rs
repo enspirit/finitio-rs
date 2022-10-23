@@ -1,18 +1,11 @@
-#[cfg(test)]
-use super::{any, builtin, nil, r#ref};
-#[cfg(test)]
-use crate::fio::common::assert_parse;
-
-use super::{NilType, RefType, SeqType, Type, UnionType};
+use super::{Type};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
-use nom::multi::{separated_list0, separated_list1};
-use nom::sequence::{pair, preceded, terminated};
+use nom::multi::{separated_list1};
 use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
 use serde::{Serialize, Deserialize};
-
 use super::common::ws;
-use super::r#type::{parse_type, parse_type_but_union};
+use super::r#type::{parse_type};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StructType {
@@ -28,6 +21,11 @@ pub fn parse_struct(input: Span) -> IResult<Span, StructType> {
         position: input.into(),
     })(input)
 }
+
+#[cfg(test)]
+use super::{nil::NilType, r#ref::RefType, union::UnionType};
+#[cfg(test)]
+use crate::fio::common::assert_parse;
 
 #[test]
 fn test_parse_struct_simple() {

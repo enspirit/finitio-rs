@@ -1,6 +1,6 @@
 use snafu::Whatever;
 
-use crate::schema::{TypeInclude, r#ref::Ref, TypeRef, builtin::Builtin};
+use crate::schema::{TypeInclude, r#ref::Ref, TypeRef};
 
 impl TypeInclude<serde_json::Value> for Ref {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
@@ -51,7 +51,7 @@ impl TypeInclude<serde_json::Value> for TypeRef {
 
 
 #[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#type::Type};
+use crate::schema::{builtin::Builtin, r#type::Type};
 #[test]
 fn test_include_builtin() {
     use crate::common::FilePosition;

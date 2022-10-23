@@ -1,5 +1,3 @@
-use std::{cell::RefCell, rc::Rc};
-
 use snafu::{Whatever, whatever};
 
 use crate::schema::{TypeInclude, union::Union};
@@ -13,23 +11,20 @@ impl TypeInclude<serde_json::Value> for Union {
             }
         });
         match found {
-            Some(t) => Ok(()),
+            Some(_) => Ok(()),
             None => whatever!("Value rejected by all types of the Union: {}", v),
         }
     }
 }
 
 #[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#ref::Ref, builtin::Builtin, r#type::Type, r#type::TypeRef, r#type::BuiltinRef};
+use crate::schema::{builtin::Builtin, r#type::Type};
 #[test]
 fn test_include_union() {
     use crate::common::FilePosition;
 
     let position = FilePosition { line: 2, column: 2};
 
-    let any_t = Type::Any(Any {
-        position: position.clone()
-    });
     let builtin_str = Type::Builtin(Builtin {
         position: position.clone(),
         target: String::from("String")

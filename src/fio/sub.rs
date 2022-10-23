@@ -12,11 +12,10 @@ use super::{Type};
 use crate::common::FilePosition;
 use crate::fio::common::Span;
 use nom::branch::alt;
-use nom::bytes::complete::{escaped_transform, is_not, take_until1};
 use nom::character::complete::alphanumeric1;
-use nom::combinator::{peek, eof};
-use nom::sequence::{pair, preceded, separated_pair, terminated};
-use nom::{bytes::complete::tag, combinator::map, sequence::delimited, IResult};
+use nom::combinator::{peek};
+use nom::sequence::{preceded, separated_pair, terminated};
+use nom::{bytes::complete::tag, combinator::map, IResult};
 use serde::{Serialize, Deserialize};
 use super::common::{ws, take_parenth_content};
 

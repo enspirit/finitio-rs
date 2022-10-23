@@ -1,8 +1,5 @@
-use std::ops::Deref;
-
-use snafu::{Whatever, whatever, OptionExt};
-
-use crate::schema::{TypeInclude, tuple::{Tuple}, heading::{Heading, Attribute}};
+use snafu::{Whatever, whatever};
+use crate::schema::{TypeInclude, heading::{Heading}};
 
 impl TypeInclude<serde_json::Value> for Heading {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {

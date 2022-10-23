@@ -1,5 +1,4 @@
 use snafu::{Whatever, whatever};
-use snafu::prelude::*;
 use crate::schema::{TypeInclude, builtin::Builtin};
 
 impl TypeInclude<serde_json::Value> for Builtin {
@@ -30,7 +29,6 @@ impl TypeInclude<serde_json::Value> for Builtin {
 
 
 #[cfg(test)]
-use crate::schema::{any::Any, nil::Nil, r#type::Type};
 #[test]
 fn test_include_builtin() {
     use crate::common::FilePosition;
