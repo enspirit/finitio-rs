@@ -6,7 +6,7 @@ impl TypeInclude<serde_json::Value> for Nil {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Null => Ok(()),
-            v => whatever!("not a null value: {}", v)
+            v => whatever!("Invalid Nil: `{}`", v)
         }
     }
 }

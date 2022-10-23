@@ -8,6 +8,15 @@ pub struct FilePosition {
     pub column: usize,
 }
 
+impl FilePosition {
+    pub fn inline() -> Self {
+        Self {
+            line: 0,
+            column: 0,
+        }
+    }
+}
+
 impl<T: AsBytes> From<LocatedSpan<T>> for FilePosition {
     fn from(span: LocatedSpan<T>) -> Self {
         Self {
