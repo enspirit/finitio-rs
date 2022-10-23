@@ -1,10 +1,10 @@
 use nom::{
-    bytes::complete::{take_while, take_while1},
+    bytes::complete::{take_while, take_while1, is_not, tag},
     character::complete::char,
-    combinator::{map, opt},
+    combinator::{map, opt, value},
     error::{Error, ErrorKind, ParseError},
     sequence::{pair, preceded},
-    Err, IResult, Slice
+    Err, IResult, Slice, branch::alt
 };
 use nom_locate::LocatedSpan;
 
@@ -22,6 +22,18 @@ pub fn ws1(input: Span) -> IResult<Span, Span> {
 
 pub fn trailing_comma(input: Span) -> IResult<Span, Option<char>> {
     opt(preceded(ws, char(',')))(input)
+}
+
+pub fn peol_comment(input: Span) -> IResult<Span, String> {
+    map(
+        preceded(
+            alt((tag("//"), tag("#"))),
+            is_not("\n\r")
+        ),
+        |f: LocatedSpan<&str>| {
+            f.to_string()
+        }
+    )(input)
 }
 
 const IDENTIFIER_EXTRA: &str = "._";

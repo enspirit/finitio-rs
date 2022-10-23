@@ -1,10 +1,12 @@
 @import scalars.fio
 
+# A sequence of Integers. Eg: valid: [1, 2, 3, 4], invalid: [1, 2, "3"]
 Seq = [Integer]
 
+# A set of Integers. Eg: valid: [1, 2, 3], invalid: [1, 2, 2]
 Set = {Integer}
 
-Complex = {{[Set]}}
+Complex = {{[Set]}} // Can we comment on the same line ?
 
 Union = Number | Integer | Nil
 

@@ -1,7 +1,6 @@
 use nom::{
-    bytes::complete::tag,
     character::complete::char,
-    combinator::{cut, map, opt},
+    combinator::{map, opt},
     error::context,
     multi::separated_list0,
     sequence::{delimited, pair, preceded, separated_pair, terminated},
@@ -10,13 +9,12 @@ use nom::{
 use serde::{Serialize, Deserialize};
 
 use crate::common::FilePosition;
-use crate::fio::common::{parse_identifier, trailing_comma, ws, ws1, Span};
+use crate::fio::common::{parse_identifier, ws, Span};
 use crate::fio::r#type::{parse_type, Type};
 
 #[cfg(test)]
 use crate::fio::common::assert_parse;
 #[cfg(test)]
-use nom::Slice;
 
 use super::RefType;
 

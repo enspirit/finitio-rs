@@ -17,7 +17,7 @@ use crate::fio::common::Span;
 use crate::fio::errors::ParseError;
 
 use super::{
-    common::{ws, ws1},
+    common::{ws, ws1, peol_comment},
     import::{parse_import, Import},
     typedef::{parse_typedef, TypeDef},
 };
@@ -31,6 +31,7 @@ pub struct Schema {
 pub enum SchemaPart {
     Import(Import),
     TypeDef(TypeDef),
+    Comment(String)
 }
 
 pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
@@ -45,6 +46,7 @@ pub fn parse_schema(input: &str) -> Result<Schema, ParseError> {
                 match part {
                     SchemaPart::Import(part) => imports.push(part),
                     SchemaPart::TypeDef(part) => type_defs.push(part),
+                    SchemaPart::Comment(_) => {},
                 }
             }
             Ok(Schema { imports, type_defs })
@@ -58,6 +60,7 @@ fn parse_schema_part(input: Span) -> IResult<Span, SchemaPart> {
     alt((
         map(parse_import, SchemaPart::Import),
         map(parse_typedef, SchemaPart::TypeDef),
+        map(peol_comment, SchemaPart::Comment)
     ))(input)
 }
 
