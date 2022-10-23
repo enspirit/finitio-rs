@@ -8,6 +8,12 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/enspirit/finitio-rust"
 readme = "README.md"
 edition = "2018"
+homepage = "https://finitio.io/"
+documentation = "https://docs.rs/finitio"
+
+exclude = [
+    "examples/*"
+]
 
 [dependencies]
 nom = "7.0"
