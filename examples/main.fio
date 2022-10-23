@@ -10,12 +10,12 @@ Union = Number | Integer | Nil
 
 Struct = <Number | Integer, Nil>
 
-PosInteger = Integer(i | i > 0)
+PosInteger = Integer(i | i >= 100)
 
 Tuple = {
     father        :?  Tuple,
     name          :   String,
-    age           :?  Number,
+    age           :?  PosInteger,
     hobbies       :?  <String, String>,
     emails        :?  {String}
 }
@@ -23,7 +23,7 @@ Tuple = {
 SeqTuple = [Tuple]
 Relation = {{
     name          :   String,
-    optional_age  :?  Number,
+    age           :?  PosInteger,
     hobbies       :?  <String, String>,
     emails        :?  {String}
 }}

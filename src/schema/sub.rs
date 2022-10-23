@@ -1,6 +1,7 @@
 use crate::common::FilePosition;
 use crate::fio;
 
+use super::constraint::Constraint;
 use super::errors::ValidationError;
 use super::r#type::Type;
 use super::typemap::TypeMap;
@@ -12,15 +13,15 @@ pub struct Sub {
     pub position: FilePosition,
 }
 
-#[derive(Clone, Debug)]
-pub struct Constraint {}
-
 impl Sub {
     pub(crate) fn from_fio(fseq: &fio::SubType) -> Self {
         let base_type = Type::from_fio(&fseq.base);
+        let constraints: Vec<Constraint> = fseq.constraints.iter().map(|c| {
+            Constraint::new(c.param.clone(), c.expr.clone(), c.position.clone())
+        }).collect();
         Self {
             base_type: Box::new(base_type),
-            constraints: vec![],
+            constraints,
             position: fseq.position.clone(),
         }
     }

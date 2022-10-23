@@ -69,10 +69,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
 
 [[package]]
+name = "evalexpr"
+version = "8.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aacfb566035f8cd02f6ec9247c242f3f9904a0b288ea383abcf4e95df6436a34"
+
+[[package]]
 name = "finitio"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "evalexpr",
  "nom",
  "nom_locate",
  "serde",

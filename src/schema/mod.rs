@@ -15,7 +15,9 @@ pub mod typedef;
 pub mod typemap;
 pub mod union;
 pub mod heading;
+pub mod constraint;
 
 pub use r#type::{Type, TypeRef, TypeInclude};
 pub use schema::Schema;
 pub use typedef::TypeDef;
+pub use constraint::Constraint;
