@@ -1,4 +1,4 @@
-use evalexpr::{build_operator_tree, Node};
+use resolver::{Expr, to_value};
 use snafu::{Whatever, ResultExt, whatever};
 
 use crate::common::FilePosition;
@@ -8,7 +8,7 @@ pub struct Constraint {
     pub param: String,
     pub expr: String,
     pub position: FilePosition,
-    pub expr_node: Option<Node>
+    pub expr_node: Option<Expr>
 }
 
 impl Constraint {
@@ -26,7 +26,7 @@ impl Constraint {
     if self.expr_node.is_some() {
       whatever!("Constraint has already been compiled");
     }
-    let expr = build_operator_tree(&self.expr)
+    let expr = Expr::new(&self.expr).compile()
       .with_whatever_context(|_| format!("Invalid constraint expression: {}", self.expr))?;
 
     self.expr_node = Some(expr);

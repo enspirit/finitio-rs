@@ -28,7 +28,7 @@ Relation = {{
     emails        :?  {String}
 }}
 
-Password = String( s | s.length >= 8 )
+Password = String
 
 User = {
     name: String,
