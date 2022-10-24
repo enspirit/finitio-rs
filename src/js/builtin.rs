@@ -1,7 +1,7 @@
 use snafu::{Whatever, whatever};
-use crate::schema::{TypeInclude, builtin::Builtin};
+use crate::schema::{FinitioType, builtin::Builtin};
 
-impl TypeInclude<serde_json::Value> for Builtin {
+impl FinitioType<serde_json::Value> for Builtin {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self.target.as_str() {
             "Number" => {

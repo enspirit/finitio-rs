@@ -1,8 +1,8 @@
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, tuple::{Tuple}};
+use crate::schema::{FinitioType, tuple::{Tuple}};
 
-impl TypeInclude<serde_json::Value> for Tuple {
+impl FinitioType<serde_json::Value> for Tuple {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Object(_obj) => {

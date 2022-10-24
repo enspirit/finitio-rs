@@ -1,14 +1,14 @@
 use snafu::Whatever;
 
-use crate::schema::{TypeInclude, r#ref::Ref, TypeRef};
+use crate::schema::{FinitioType, r#ref::Ref, TypeRef};
 
-impl TypeInclude<serde_json::Value> for Ref {
+impl FinitioType<serde_json::Value> for Ref {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.target.include(v)
     }
 }
 
-impl TypeInclude<serde_json::Value> for TypeRef {
+impl FinitioType<serde_json::Value> for TypeRef {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match self {
             TypeRef::Any(t) => {

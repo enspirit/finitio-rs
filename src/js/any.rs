@@ -1,8 +1,8 @@
 use snafu::Whatever;
 
-use crate::schema::{TypeInclude, any::Any};
+use crate::schema::{FinitioType, any::Any};
 
-impl<T> TypeInclude<T> for Any {
+impl<T> FinitioType<T> for Any {
     fn include(&self, _: &T) -> Result<(), Whatever> {
         Ok(())
     }

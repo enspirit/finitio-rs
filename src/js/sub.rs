@@ -1,7 +1,7 @@
 use snafu::{Whatever, ResultExt, whatever};
-use crate::{schema::{TypeInclude, sub::{Sub}, constraint::ConstraintExecute}};
+use crate::{schema::{FinitioType, sub::{Sub}, constraint::ConstraintExecute}};
 
-impl TypeInclude<serde_json::Value> for Sub {
+impl FinitioType<serde_json::Value> for Sub {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.base_type.include(v)
             .with_whatever_context(|_| format!("Value rejected by base type: {}", v))?;

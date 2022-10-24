@@ -20,8 +20,8 @@ use super::typedef::TypeDef;
 use super::union::Union;
 use super::{errors::ValidationError, typemap::TypeMap};
 
-pub trait TypeInclude<T> {
-    fn include(&self, _: &T) -> Result<(), Whatever>;
+pub trait FinitioType<T> {
+    fn include(&self, value: &T) -> Result<(), Whatever>;
 }
 
 #[derive(Clone, Debug)]

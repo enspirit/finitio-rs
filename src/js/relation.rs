@@ -2,9 +2,9 @@ use std::collections::{HashMap};
 use serde_hashkey::{to_key};
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, relation::{Relation}};
+use crate::schema::{FinitioType, relation::{Relation}};
 
-impl TypeInclude<serde_json::Value> for Relation {
+impl FinitioType<serde_json::Value> for Relation {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(arr) => {

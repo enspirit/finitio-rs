@@ -1,7 +1,7 @@
 use snafu::{Whatever, whatever};
-use crate::schema::{TypeInclude, heading::{Heading}};
+use crate::schema::{FinitioType, heading::{Heading}};
 
-impl TypeInclude<serde_json::Value> for Heading {
+impl FinitioType<serde_json::Value> for Heading {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Object(obj) => {

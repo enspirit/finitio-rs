@@ -1,8 +1,8 @@
 use snafu::Whatever;
 
-use crate::schema::{TypeInclude, Type, TypeDef};
+use crate::schema::{FinitioType, Type, TypeDef};
 
-impl TypeInclude<serde_json::Value> for Type {
+impl FinitioType<serde_json::Value> for Type {
   fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
           Type::Any(t) => t.include(v),
@@ -20,7 +20,7 @@ impl TypeInclude<serde_json::Value> for Type {
   }
 }
 
-impl TypeInclude<serde_json::Value> for TypeDef {
+impl FinitioType<serde_json::Value> for TypeDef {
   fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
       match self {
         TypeDef::AnyType(t) => t.target.borrow().include(v),

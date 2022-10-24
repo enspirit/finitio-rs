@@ -1,8 +1,8 @@
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, seq::Seq};
+use crate::schema::{FinitioType, seq::Seq};
 
-impl TypeInclude<serde_json::Value> for Seq {
+impl FinitioType<serde_json::Value> for Seq {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(a) => {

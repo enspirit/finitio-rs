@@ -1,8 +1,8 @@
 use snafu::{Whatever, whatever};
 
-use crate::schema::{TypeInclude, nil::Nil};
+use crate::schema::{FinitioType, nil::Nil};
 
-impl TypeInclude<serde_json::Value> for Nil {
+impl FinitioType<serde_json::Value> for Nil {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Null => Ok(()),

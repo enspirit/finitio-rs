@@ -1,8 +1,8 @@
 use snafu::{Whatever, whatever, ResultExt};
 
-use crate::schema::{TypeInclude, r#struct::Struct};
+use crate::schema::{FinitioType, r#struct::Struct};
 
-impl TypeInclude<serde_json::Value> for Struct {
+impl FinitioType<serde_json::Value> for Struct {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         match v {
             serde_json::Value::Array(arr) => {

@@ -17,7 +17,7 @@ pub mod union;
 pub mod heading;
 pub mod constraint;
 
-pub use r#type::{Type, TypeRef, TypeInclude};
+pub use r#type::{Type, TypeRef, FinitioType};
 pub use schema::Schema;
 pub use typedef::TypeDef;
 pub use constraint::Constraint;

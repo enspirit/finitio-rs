@@ -76,7 +76,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             match target {
                 Some(t) => {
                     let t = t.to_owned();
-                    match schema::TypeInclude::include(&t, &data) {
+                    match schema::FinitioType::include(&t, &data) {
                         Ok(_) => println!("Valid data!"),
                         Err(e) => {
                             eprintln!("Invalid data: {}", e);

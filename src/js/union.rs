@@ -1,8 +1,8 @@
 use snafu::{Whatever, whatever};
 
-use crate::schema::{TypeInclude, union::Union};
+use crate::schema::{FinitioType, union::Union};
 
-impl TypeInclude<serde_json::Value> for Union {
+impl FinitioType<serde_json::Value> for Union {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         let found = self.candidates.iter().find(|x| {
             match x.include(v) {
