@@ -6,6 +6,10 @@ impl FinitioType<serde_json::Value> for Ref {
     fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         self.target.include(v)
     }
+
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        Ok(value.clone())
+    }
 }
 
 impl FinitioType<serde_json::Value> for TypeRef {
@@ -46,6 +50,10 @@ impl FinitioType<serde_json::Value> for TypeRef {
             },
             TypeRef::Unresolved { name: _, position: _ } => todo!(),
         }
+    }
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
     }
 }
 

@@ -54,4 +54,9 @@ impl FinitioType<serde_json::Value> for Heading {
             v => whatever!("Value not compatible with heading: {}", v)
         }
     }
+
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
+    }
 }

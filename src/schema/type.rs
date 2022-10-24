@@ -22,6 +22,7 @@ use super::{errors::ValidationError, typemap::TypeMap};
 
 pub trait FinitioType<T> {
     fn include(&self, value: &T) -> Result<(), Whatever>;
+    fn dress(&self, value: &T) -> Result<T, Whatever>;
 }
 
 #[derive(Clone, Debug)]

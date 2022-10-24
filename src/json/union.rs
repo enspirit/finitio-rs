@@ -15,6 +15,11 @@ impl FinitioType<serde_json::Value> for Union {
             None => whatever!("Value rejected by all types of the Union: {}", v),
         }
     }
+
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
+    }
 }
 
 #[cfg(test)]

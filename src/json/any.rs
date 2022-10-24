@@ -2,9 +2,13 @@ use snafu::Whatever;
 
 use crate::schema::{FinitioType, any::Any};
 
-impl<T> FinitioType<T> for Any {
-    fn include(&self, _: &T) -> Result<(), Whatever> {
+impl FinitioType<serde_json::Value> for Any {
+    fn include(&self, v: &serde_json::Value) -> Result<(), Whatever> {
         Ok(())
+    }
+    fn dress(&self, v: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(v)?;
+        Ok(v.clone())
     }
 }
 

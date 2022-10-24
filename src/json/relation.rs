@@ -28,6 +28,10 @@ impl FinitioType<serde_json::Value> for Relation {
             v => whatever!("Invalid value for Relation: {}", v)
         }
     }
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
+    }
 }
 
 #[cfg(test)]

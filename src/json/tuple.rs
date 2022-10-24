@@ -12,6 +12,10 @@ impl FinitioType<serde_json::Value> for Tuple {
             v => whatever!("Invalid source type for Tuple: {}", v)
         }
     }
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
+    }
 }
 
 #[cfg(test)]

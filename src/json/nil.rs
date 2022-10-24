@@ -9,6 +9,11 @@ impl FinitioType<serde_json::Value> for Nil {
             v => whatever!("Invalid Nil: `{}`", v)
         }
     }
+
+    fn dress(&self, value: &serde_json::Value) -> Result<serde_json::Value, Whatever> {
+        self.include(value)?;
+        Ok(value.clone())
+    }
 }
 
 #[cfg(test)]
