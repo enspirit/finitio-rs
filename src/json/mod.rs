@@ -13,5 +13,6 @@ pub mod tuple;
 pub mod r#struct;
 pub mod heading;
 pub mod constraint;
+pub mod builtins;
 
 pub use schema::generate_json;
