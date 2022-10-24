@@ -1,5 +1,5 @@
 use finitio::fio::parse_file;
-use finitio::js;
+use finitio::json;
 use finitio::schema;
 use snafu::ErrorCompat;
 use std::error::Error;
@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(fios) => fios,
                 Err(err) => panic!("Your schema is invalid: {}", err),
             };
-            js::generate_json(&fios)?;
+            json::generate_json(&fios)?;
 
             Ok(())
         },
