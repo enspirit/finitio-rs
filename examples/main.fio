@@ -47,9 +47,10 @@ Person = {
   The notation for defining relation types naturally follows:
   */
 People = {{
-  name          :   String,
-  age           :   PosInteger,
-  emails        :?  {String},
-  password      :?  Password,
+  name          :   String
+  age           :   PosInteger
+  emails        :?  {String}
+  password      :?  Password
   confirm       :?  Password
+  ...           :   String
 }}

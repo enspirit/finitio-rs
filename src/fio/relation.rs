@@ -30,6 +30,7 @@ fn test_parse_relation_simple() {
         parse_relation(Span::new("{{ name: String, age:? Number }}")),
         RelationType {
             heading: Heading {
+                allow_extra: None,
                 attributes: vec![
                     Attribute {
                         name: "name".to_string(),

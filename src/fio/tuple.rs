@@ -29,6 +29,7 @@ fn test_parse_tuple_simple() {
         parse_tuple(Span::new("{ name: String, age:? Number}")),
         TupleType {
             heading: Heading {
+                allow_extra: None,
                 attributes: vec![
                     Attribute {
                         name: "name".to_string(),

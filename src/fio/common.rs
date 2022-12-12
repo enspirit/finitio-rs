@@ -12,12 +12,18 @@ pub type Span<'a> = LocatedSpan<&'a str>;
 
 const WHITESPACE: &str = " \t\r\n";
 
+const WHITESPACE_NO_NL: &str = " \t";
+
 pub fn ws(input: Span) -> IResult<Span, Span> {
     take_while(move |c| WHITESPACE.contains(c))(input)
 }
 
 pub fn ws1(input: Span) -> IResult<Span, Span> {
     take_while1(move |c| WHITESPACE.contains(c))(input)
+}
+
+pub fn ws_no_nl(input: Span) -> IResult<Span, Span> {
+    take_while(move |c| WHITESPACE_NO_NL.contains(c))(input)
 }
 
 pub fn _trailing_comma(input: Span) -> IResult<Span, Option<char>> {
