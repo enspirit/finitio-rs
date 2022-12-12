@@ -42,9 +42,9 @@ pub enum Type {
 
 pub fn parse_type(input: Span) -> IResult<Span, Type> {
     alt((
+        map(preceded(ws, parse_union), Type::UnionType),
         map(preceded(ws, parse_sub), Type::SubType),
         map(preceded(ws, parse_struct), Type::StructType),
-        map(preceded(ws, parse_union), Type::UnionType),
         map(preceded(ws, parse_builtin), Type::BuiltinType),
         map(preceded(ws, parse_any), Type::AnyType),
         map(preceded(ws, parse_nil), Type::NilType),
