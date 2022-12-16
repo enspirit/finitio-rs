@@ -1,23 +1,27 @@
 // You can imports other schemas from other (relative) files
 @import scalars.fio
 
-// Capturing sequences (aka arrays) of values is straightforward. Sequences are ordered and may contain duplicates:
+/- Capturing sequences (aka arrays) of values is straightforward. Sequences are ordered and may contain duplicates: -/
 Seq = [Integer]
 
-// Capturing sets of values is straightforward too. Set are unordered and may not contain duplicates:
+/- Capturing sets of values is straightforward too. Set are unordered and may not contain duplicates: -/
 Set = {Integer}
 
-/*
+/-
   Capturing structs is straightforward too.
   Structs can be used to capture ordered pairs, triples, and so forth. Each struct component has its own type:
-  */
+  -/
 Struct = <Number | Integer, Nil>
 
-/*
+/** (Example of multiline comment)
   Sub types are subsets of values.
   Finitio uses so-called 'specialization by constraint' to define sub types. E.g., the set of positive integers can be defined as follows:
   */
+
+/- Positive integer -/
 PosInteger = Integer(i | i >= 0)
+
+/- Password must be > 10 chars -/
 Password = String(s | len(s) > 10)
 
 /*
@@ -35,6 +39,7 @@ MaybeNumber = Number | Nil
   A set of such (name,Type) pairs is called a heading.
   */
 Person = {
+    /- Attributes can have meta -/
     name          :   String,
     age           :   PosInteger,
     emails        :?  {String},

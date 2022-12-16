@@ -55,6 +55,19 @@ pub fn multiline_comment(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
+pub fn parse_meta(input: Span) -> IResult<Span, String> {
+    map(
+        tuple((
+            tag("/-"),
+            take_until("-/"),
+            tag("-/")
+          )),
+        |(_, comment, _): (LocatedSpan<&str>, LocatedSpan<&str>, LocatedSpan<&str>)| {
+            comment.to_string()
+        }
+    )(input)
+}
+
 pub fn parse_comment(input: Span) -> IResult<Span, String> {
     alt((peol_comment, multiline_comment))(input)
 }

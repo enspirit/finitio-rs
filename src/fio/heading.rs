@@ -18,7 +18,7 @@ use crate::fio::common::assert_parse;
 #[cfg(test)]
 
 use super::RefType;
-use super::{common::ws_no_nl, AnyType};
+use super::{common::{ws_no_nl, parse_meta}, AnyType};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Heading {
@@ -35,6 +35,7 @@ pub struct AllowExtra {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Attribute {
+    pub meta: Option<String>,
     pub name: String,
     pub att_type: Type,
     pub optional: bool,
@@ -49,13 +50,16 @@ fn parse_separator(input: Span) -> IResult<Span, char> {
 }
 
 fn parse_attribute(input: Span) -> IResult<Span, Attribute> {
+    let parser = separated_pair(
+        parse_identifier,
+        preceded(ws, char(':')),
+        pair(opt(terminated(char('?'), ws)), parse_type),
+    );
+    let with_meta = pair(opt(parse_meta), preceded(ws, parser));
     map(
-        separated_pair(
-            parse_identifier,
-            preceded(ws, char(':')),
-            pair(opt(terminated(char('?'), ws)), parse_type),
-        ),
-        |(name, (optional, att_type))| Attribute {
+        with_meta,
+        |(meta, (name, (optional, att_type)))| Attribute {
+            meta: meta,
             name,
             att_type,
             optional: optional != None,
@@ -131,6 +135,7 @@ fn test_parse_attribute() {
     assert_parse(
         parse_attribute(Span::new("name:String")),
         Attribute {
+            meta: None,
             name: "name".to_string(),
             position: FilePosition { line: 1, column: 1 },
             att_type: Type::RefType(RefType {
@@ -143,6 +148,7 @@ fn test_parse_attribute() {
     assert_parse(
         parse_attribute(Span::new("name: String")),
         Attribute {
+            meta: None,
             name: "name".to_string(),
             position: FilePosition { line: 1, column: 1 },
             att_type: Type::RefType(RefType {
@@ -155,6 +161,7 @@ fn test_parse_attribute() {
     assert_parse(
         parse_attribute(Span::new("name : String")),
         Attribute {
+            meta: None,
             name: "name".to_string(),
             position: FilePosition { line: 1, column: 1 },
             att_type: Type::RefType(RefType {
@@ -171,6 +178,7 @@ fn test_parse_attribute_optional() {
     assert_parse(
         parse_attribute(Span::new("name :? String")),
         Attribute {
+            meta: None,
             name: "name".to_string(),
             position: FilePosition { line: 1, column: 1 },
             att_type: Type::RefType(RefType {
@@ -199,6 +207,7 @@ fn test_parse_attributes_simple() {
         parse_attributes(Span::new("{name: String}")),
         (
             vec![Attribute {
+                meta: None,
                 name: "name".to_string(),
                 att_type: Type::RefType(RefType {
                     name: "String".to_string(),
@@ -219,6 +228,7 @@ fn test_parse_attributes_duo() {
         (
             vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "String".to_string(),
@@ -228,6 +238,7 @@ fn test_parse_attributes_duo() {
                     position: FilePosition { line: 1, column: 2 },
                 },
                 Attribute {
+                    meta: None,
                     name: "age".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "Number".to_string(),
@@ -259,6 +270,7 @@ fn test_parse_attributes_spacing() {
         (
             vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "String".to_string(),
@@ -271,6 +283,7 @@ fn test_parse_attributes_spacing() {
                     position: FilePosition { line: 2, column: 7 },
                 },
                 Attribute {
+                    meta: None,
                     name: "age".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "Number".to_string(),
@@ -299,6 +312,7 @@ fn test_parse_optional_comma_when_using_newline() {
         (
             vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "String".to_string(),
@@ -311,6 +325,7 @@ fn test_parse_optional_comma_when_using_newline() {
                     position: FilePosition { line: 2, column: 7 },
                 },
                 Attribute {
+                    meta: None,
                     name: "age".to_string(),
                     att_type: Type::RefType(RefType {
                         name: "Number".to_string(),
@@ -433,6 +448,7 @@ fn test_parse_non_empty_heading() {
         Heading {
             attributes: vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     position: FilePosition { line: 1, column: 3 },
                     att_type: Type::RefType(RefType {
@@ -459,6 +475,7 @@ fn test_parse_heading_with_any_extra() {
         Heading {
             attributes: vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     position: FilePosition { line: 2, column: 3 },
                     att_type: Type::RefType(RefType {
@@ -490,6 +507,7 @@ fn test_parse_heading_with_string_extra() {
         Heading {
             attributes: vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     position: FilePosition { line: 2, column: 3 },
                     att_type: Type::RefType(RefType {
@@ -522,6 +540,7 @@ fn test_parse_heading_inline_with_extra() {
         Heading {
             attributes: vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     position: FilePosition { line: 1, column: 3 },
                     att_type: Type::RefType(RefType {
@@ -553,6 +572,7 @@ fn test_parse_heading_inline_with_string_extra() {
         Heading {
             attributes: vec![
                 Attribute {
+                    meta: None,
                     name: "name".to_string(),
                     position: FilePosition { line: 1, column: 3 },
                     att_type: Type::RefType(RefType {
@@ -573,6 +593,33 @@ fn test_parse_heading_inline_with_string_extra() {
                     position: FilePosition { line: 1, column: 22 },
                 }),
             })),
+        }
+    );
+}
+
+#[test]
+fn test_parse_heading_with_meta() {
+    let extra = "{\n  /- some meta -/\nname: String }";
+    assert_parse(
+        parse_heading(Span::new(extra)),
+        Heading {
+            attributes: vec![
+                Attribute {
+                    meta: Some(" some meta ".to_string()),
+                    name: "name".to_string(),
+                    position: FilePosition { line: 2, column: 3 },
+                    att_type: Type::RefType(RefType {
+                        name: "String".to_string(),
+                        position: FilePosition { line: 3, column: 7 },
+                    }),
+                    optional: false,
+                },
+            ],
+            position: FilePosition {
+                line: 1,
+                column: 1,
+            },
+            allow_extra: None,
         }
     );
 }

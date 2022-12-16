@@ -32,6 +32,7 @@ fn test_parse_tuple_simple() {
                 allow_extra: None,
                 attributes: vec![
                     Attribute {
+                        meta: None,
                         name: "name".to_string(),
                         att_type: Type::RefType(RefType {
                             name: "String".to_string(),
@@ -41,6 +42,7 @@ fn test_parse_tuple_simple() {
                         position: FilePosition { line: 1, column: 3 },
                     },
                     Attribute {
+                        meta: None,
                         name: "age".to_string(),
                         att_type: Type::RefType(RefType {
                             name: "Number".to_string(),

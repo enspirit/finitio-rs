@@ -9,6 +9,8 @@ use crate::{
     fio::common::{parse_identifier, Span},
 };
 
+use nom::combinator::opt;
+use nom::sequence::pair;
 use nom::{
     bytes::complete::tag,
     combinator::map,
@@ -17,9 +19,10 @@ use nom::{
 };
 use serde::{Serialize, Deserialize};
 
-use super::common::ws;
+use super::common::{ws, parse_meta};
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TypeDef {
+    pub meta: Option<String>,
     pub name: String,
     pub target: Type,
     pub position: FilePosition,
@@ -31,7 +34,9 @@ pub fn parse_typedef(input: Span) -> IResult<Span, TypeDef> {
         preceded(ws, tag("=")),
         preceded(ws, parse_type),
     );
-    map(parser, |(name, right)| TypeDef {
+    let with_meta = pair(opt(parse_meta), preceded(ws, parser));
+    map(with_meta, |(meta, (name, right))| TypeDef {
+        meta: meta,
         name: String::from(name),
         target: right,
         position: input.into(),
@@ -44,6 +49,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Null = Nil")),
         TypeDef {
+            meta: None,
             name: String::from("Null"),
             target: Type::NilType(nil::NilType {
                 position: FilePosition { line: 1, column: 8 },
@@ -56,6 +62,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Any = .")),
         TypeDef {
+            meta: None,
             name: String::from("Any"),
             target: Type::AnyType(any::AnyType {
                 position: FilePosition { line: 1, column: 7 },
@@ -68,6 +75,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Number = .Number")),
         TypeDef {
+            meta: None,
             name: String::from("Number"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::BuiltinType(builtin::BuiltinType {
@@ -84,6 +92,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Integer = Number")),
         TypeDef {
+            meta: None,
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::RefType(r#ref::RefType {
@@ -100,6 +109,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Integer = [Number]")),
         TypeDef {
+            meta: None,
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::SeqType(SeqType {
@@ -122,6 +132,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Integer = {Number}")),
         TypeDef {
+            meta: None,
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::SetType(SetType {
@@ -145,6 +156,7 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Integer=Number")),
         TypeDef {
+            meta: None,
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::RefType(r#ref::RefType {
@@ -156,11 +168,27 @@ fn test_parse_typedef() {
     assert_parse(
         parse_typedef(Span::new("Integer\t=   \nNumber")),
         TypeDef {
+            meta: None,
             name: String::from("Integer"),
             position: FilePosition { line: 1, column: 1 },
             target: Type::RefType(r#ref::RefType {
                 name: String::from("Number"),
                 position: FilePosition { line: 2, column: 1 },
+            }),
+        },
+    );
+
+    // ////// Metadata tests
+
+    assert_parse(
+        parse_typedef(Span::new("/- some metadata -/\nInteger = Number")),
+        TypeDef {
+            meta: Some(" some metadata ".to_string()),
+            name: String::from("Integer"),
+            position: FilePosition { line: 1, column: 1 },
+            target: Type::RefType(r#ref::RefType {
+                name: String::from("Number"),
+                position: FilePosition { line: 2, column: 11 },
             }),
         },
     );

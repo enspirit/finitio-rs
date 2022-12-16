@@ -1,0 +1,6 @@
+@import ./scalars.fio
+@import ./main.fio
+
+Montype = {
+  test :? Nil|{ test: Boolean }
+}

@@ -41,31 +41,31 @@ pub fn parse_file(filename: &PathBuf) -> Result<HashMap<PathBuf, Schema>, Valida
     // Parse entry point
     let main_fio = parse_schema(&contents[..]).expect("Syntax error");
 
-    // Parse imports
-    if !main_fio.imports.is_empty() {
-        let base_dir = filename.parent()
-            .expect("base_dir could not be determined from source");
-        let mut included_files: HashSet<PathBuf> = HashSet::new();
-        let mut includes = main_fio
-            .imports
-            .iter()
-            .map(|p| (base_dir.join(&p.filename)))
-            .collect::<Vec<_>>();
-        while !includes.is_empty() {
-            let include = includes.remove(0);
-            if included_files.contains(&include) {
-                continue;
-            }
-            included_files.insert(include.clone());
-            let contents = fs::read_to_string(include.clone())
-                .expect("Should have been able to read the file");
-            let fio = parse_schema(&contents[..])
-                .expect("Syntax error");
-            let dir = include.parent().unwrap();
-            includes.extend(fio.imports.iter().map(|inc| dir.join(&inc.filename)));
-            fios.insert(include, fio);
-        }
-    }
+    // // Parse imports
+    // if !main_fio.imports.is_empty() {
+    //     let base_dir = filename.parent()
+    //         .expect("base_dir could not be determined from source");
+    //     let mut included_files: HashSet<PathBuf> = HashSet::new();
+    //     let mut includes = main_fio
+    //         .imports
+    //         .iter()
+    //         .map(|p| (base_dir.join(&p.filename)))
+    //         .collect::<Vec<_>>();
+    //     while !includes.is_empty() {
+    //         let include = includes.remove(0);
+    //         if included_files.contains(&include) {
+    //             continue;
+    //         }
+    //         included_files.insert(include.clone());
+    //         let contents = fs::read_to_string(include.clone())
+    //             .expect("Should have been able to read the file");
+    //         let fio = parse_schema(&contents[..])
+    //             .expect("Syntax error");
+    //         let dir = include.parent().unwrap();
+    //         includes.extend(fio.imports.iter().map(|inc| dir.join(&inc.filename)));
+    //         fios.insert(include, fio);
+    //     }
+    // }
     fios.insert(filename.clone(), main_fio);
 
 
@@ -131,6 +131,7 @@ Integer = Number
             }],
             type_defs: vec![
                 TypeDef {
+                    meta: None,
                     name: String::from("Number"),
                     position: FilePosition { line: 4, column: 1 },
                     target: Type::BuiltinType(builtin::BuiltinType {
@@ -142,6 +143,7 @@ Integer = Number
                     })
                 },
                 TypeDef {
+                    meta: None,
                     name: String::from("Any"),
                     target: Type::AnyType(any::AnyType {
                         position: FilePosition { line: 5, column: 7 }
@@ -149,6 +151,7 @@ Integer = Number
                     position: FilePosition { line: 5, column: 1 }
                 },
                 TypeDef {
+                    meta: None,
                     name: String::from("Integer"),
                     position: FilePosition { line: 6, column: 1 },
                     target: Type::RefType(r#ref::RefType {
