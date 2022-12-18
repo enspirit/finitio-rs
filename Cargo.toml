@@ -25,3 +25,5 @@ clap = { version = "4.0.12", features = ["derive"] }
 snafu = { version = "0.7.3" }
 serde-hashkey = "0.4.3"
 resolver = "0.1"
+pest = "2.0"
+pest_derive = "2.0"

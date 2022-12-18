@@ -1,0 +1,123 @@
+// LEXER
+
+alpha = { 'a'..'z' | 'A'..'Z' }
+digit = { '0'..'9' }
+alphanum = { alpha | digit }
+
+newline = _{ "\n" | "\r" }
+WHITESPACE = _{ " " }
+
+spacing = _{ (COMMENT | WHITESPACE | newline)* }
+
+// COMMENTS
+
+inline_comment = @{ ("#" | "//") ~ (!newline ~ ANY)* ~ newline }
+multiline_comment = @{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+COMMENT = _{ inline_comment | multiline_comment }
+
+// imports & paths
+path_part = { alphanum | "_" | "." | "/" | "-" }
+path = _{ path_part+ }
+
+relative_path = @{ "./" ~ path }
+absolute_path = @{ path }
+
+http_url = @{ "http" ~ "s"? ~ "://" ~ absolute_path }
+
+import_kw = _{ "@import" }
+relative_import = { import_kw ~ relative_path }
+absolute_import = { import_kw ~ absolute_path }
+http_import = { import_kw ~ http_url }
+
+import = _{ http_import | relative_import | absolute_import }
+
+// TYPES
+ident_extra = _{ "_" | "." | "-" }
+ident = @{ alpha ~ (alphanum | ident | ident_extra)* }
+typename = @{ "."? ~ ident }
+
+niltype = @{ "Nil" }
+reftype = { ident ~ generics? }
+builtintype = { "." ~ ident }
+anytype = { "." }
+seqtype = { "[" ~ spacing ~ (uniontype|fio_type) ~ spacing ~ "]" }
+settype = { "{" ~ spacing ~ (uniontype|fio_type) ~ spacing ~ "}" }
+structtype = { "<" ~ spacing ~ (uniontype|fio_type) ~ spacing ~ ("," ~ spacing ~ (uniontype|fio_type))* ~ spacing ~ ">" }
+uniontype = { fio_type ~ (spacing ~ "|" ~ spacing ~ fio_type)+ }
+
+// HEADING BASED TYPES
+
+attribute_def = {  ":?" | ":" }
+attribute = { metadata? ~ spacing ~ ident ~ spacing ~ attribute_def ~ spacing ~ (uniontype|fio_type) }
+
+heading_extra = ${ "..." ~ spacing ~ (":" ~ spacing ~ (uniontype | fio_type))? }
+heading = { spacing ~ (attribute ~ ((("," ~ newline?) | newline) ~ spacing ~ attribute)*)? ~ spacing ~ heading_extra? ~ spacing }
+
+tupletype = {
+ "{"  ~ heading ~ "}"
+}
+
+reltype = {
+ "{{"  ~ heading ~ "}}"
+}
+
+parenth_expr = @{ "(" ~ (!")" ~ ANY)* ~ ")" }
+constraint_block = @{spacing ~ (parenth_expr | (!")" ~ ANY))*}
+constraint = {"(" ~ spacing ~ ident ~ spacing ~ "|" ~ spacing ~ constraint_block ~ ")"}
+subtype = { subtypeable ~ constraint }
+
+contract = {"<" ~ ident ~ ">" ~ WHITESPACE+ ~ adtypeable}
+adtype = { typename ~ (WHITESPACE+ ~ contract)+ }
+
+adtypeable = _{
+   | reltype
+   | tupletype
+   | seqtype
+   | niltype
+   | builtintype
+   | anytype
+   | reftype
+   | structtype
+   | settype
+}
+
+subtypeable = _{
+   | reltype
+   | tupletype
+   | seqtype
+   | niltype
+   | builtintype
+   | anytype
+   | reftype
+   | structtype
+   | settype
+}
+
+fio_type = {
+    | adtype
+    | subtype
+    | reltype
+    | tupletype
+    | seqtype
+    | niltype
+    | builtintype
+    | anytype
+    | reftype
+    | structtype
+    | settype
+}
+
+metadata = @{ "/-" ~ (!"-/" ~ ANY)* ~ "-/" }
+
+generics = { "<" ~ ident ~ (spacing ~ "," ~ spacing ~ ident)* ~ ">" }
+typedef = ${ metadata? ~ spacing ~ ident ~ generics? ~ spacing ~ "=" ~ spacing ~ (uniontype | fio_type ) }
+
+// SCHEMA FILES PARTS
+
+fio_typedefs = { (spacing ~ typedef ~ spacing)* }
+fio_imports = { (spacing ~ import ~ spacing)* }
+
+// WHATS A .FIO
+
+fio_parts = _{ fio_imports ~ fio_typedefs }
+fio = _{ SOI ~ fio_parts ~ EOI }

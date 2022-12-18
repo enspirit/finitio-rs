@@ -1,5 +1,8 @@
 // You can imports other schemas from other (relative) files
-@import scalars.fio
+@import ./scalars.fio
+
+String = .String
+Alias = String
 
 /- Capturing sequences (aka arrays) of values is straightforward. Sequences are ordered and may contain duplicates: -/
 Seq = [Integer]
@@ -47,10 +50,10 @@ Person = {
     confirm       :?  Password
 }(p | p.password == p.confirm)
 
-/*
+/-
   Relations are sets of tuples, all of which have the same heading.
   The notation for defining relation types naturally follows:
-  */
+  -/
 People = {{
   name          :   String
   age           :   PosInteger

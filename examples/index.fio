@@ -1,5 +1,7 @@
-@import ./scalars.fio
-@import ./main.fio
+// Absolute import
+@import scalars.fio // (= relative from the entry point's dirname/context)
+// Relative import
+@import ./main.fio // (relative to the current file)
 
 Montype = {
   test :? Nil|{ test: Boolean }
